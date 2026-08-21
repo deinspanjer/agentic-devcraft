@@ -1,0 +1,11 @@
+{
+  "name": "agentic-devcraft",
+  "description": "Composable development-workflow skills for Claude Code.",
+  "author": {
+    "name": "Daniel Einspanjer",
+    "url": "https://github.com/deinspanjer"
+  },
+  "homepage": "https://github.com/deinspanjer/agentic-devcraft",
+  "repository": "https://github.com/deinspanjer/agentic-devcraft",
+  "skills": "./skills/"
+}

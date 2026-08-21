@@ -1,0 +1,22 @@
+{
+  "name": "agentic-devcraft",
+  "version": "0.1.0",
+  "description": "Composable development-workflow skills for Codex.",
+  "author": {
+    "name": "Daniel Einspanjer",
+    "url": "https://github.com/deinspanjer"
+  },
+  "homepage": "https://github.com/deinspanjer/agentic-devcraft",
+  "repository": "https://github.com/deinspanjer/agentic-devcraft",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Agentic Devcraft",
+    "shortDescription": "Composable development workflows for Codex.",
+    "longDescription": "Skills that adapt and compose proven development workflows without imposing a single framework.",
+    "developerName": "Daniel Einspanjer",
+    "category": "Productivity",
+    "capabilities": ["Read"],
+    "websiteURL": "https://github.com/deinspanjer/agentic-devcraft",
+    "defaultPrompt": ["Use $agentic-devcraft:status to verify this installation."]
+  }
+}

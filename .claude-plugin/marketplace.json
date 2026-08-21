@@ -1,0 +1,15 @@
+{
+  "name": "agentic-devcraft",
+  "description": "Composable development-workflow skills for Claude Code.",
+  "owner": {
+    "name": "Daniel Einspanjer",
+    "url": "https://github.com/deinspanjer"
+  },
+  "plugins": [
+    {
+      "name": "agentic-devcraft",
+      "source": "./plugins/agentic-devcraft",
+      "description": "Composable development-workflow skills for Claude Code."
+    }
+  ]
+}
