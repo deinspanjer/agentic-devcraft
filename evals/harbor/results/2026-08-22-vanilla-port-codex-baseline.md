@@ -6,6 +6,9 @@ The first engineering benchmark needed a clean control before Devcraft or any
 other toolkit was introduced. Each subject received only a Python cost meter,
 its self-tests, a minimal README, synthetic Codex state, and this task:
 
+The sanitized fixture was built from the public
+[Codex Cost Meter source at the pinned revision](https://github.com/deinspanjer/codex-cost-meter/tree/0b5eb56978c91e1fa1631d9ec84ac3767e8fce79).
+
 > Port the existing Python Codex cost meter in this repository to Rust so it can
 > be distributed as a standalone application for macOS and eventually Windows.
 > Start with a working version of the report functionality.
@@ -41,9 +44,18 @@ All 12 trials completed both stages. The initial ports passed 84/84 discoverable
 contracts and the extensions passed 48/48. No trial required a material owner
 answer, produced a process artifact, or added platform/packaging scaffolding.
 
-This is strong plumbing evidence and weak comparative evidence. Every arm hit the
-behavioral-correctness ceiling, so the run cannot identify a better model,
-reasoning level, or orchestration strategy.
+This is strong plumbing evidence and limited comparative evidence. Every arm hit
+the behavioral-correctness ceiling, so the run does not identify a correctness
+winner. Within that ceiling, Sol at low reasoning with direct execution was the
+most suitable configuration for this task as designed: it had the lowest median
+reported input, cached-input, and output token counts in both stages, and its
+extension had the fewest turns and tool calls while changing two files with one
+pricing owner.
+
+That is provisional resource-efficiency evidence for small, well-specified work,
+not evidence that Sol or low reasoning is generally superior. The qualitative
+rubric was not applied, monetary cost was unavailable, and Terra was tested only
+at high reasoning, so model and reasoning effects cannot be separated.
 
 ## Median observed measures
 
@@ -73,10 +85,13 @@ files is not automatically better.
 
 - The fixture, controller, continued-session boundary, verifier, contamination
   checks, repeated scheduling, provenance, and reporting operate end to end.
+- Sol low with direct execution was the most resource-efficient suitable arm for
+  this task under the measures available, without sacrificing verified behavior.
 - The scenario needs a richer rubric or a more discriminating task before model
   quality can be compared.
-- Orchestration must be an explicit instruction with observed delegation, not a
-  feature flag.
+- Making subagents available caused no subject to delegate and made no observed
+  behavioral difference. Orchestration must be an explicit instruction with
+  observed delegation, not a feature flag.
 - Interaction cannot be evaluated merely by counting questions. A future
   scenario needs meaningful ambiguity and a frozen owner-answer policy.
 - Token and file counts must be interpreted beside completeness, documentation,
@@ -101,4 +116,7 @@ trajectories are not an exact continuation.
 The [machine baseline](../baselines/vanilla-port-codex-v1.json) contains every
 trial, factor, median, per-stage measure, availability marker, and fixture/prompt
 digest needed for later comparisons. Raw Harbor jobs remain ignored local
-artifacts and are not required to understand or reuse this baseline.
+artifacts because they may contain private subject-authored text and add
+substantial volume. The committed fixture declarations, prompts, contracts,
+harness, provenance, and reports preserve enough detail to replicate the study;
+they do not support independent re-grading of every historical subject output.

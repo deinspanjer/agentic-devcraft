@@ -149,8 +149,11 @@ the one-repetition evidence before approving the full calibration matrix.
 
 ### Vanilla port benchmark
 
-The first benchmark builds a sanitized fixture from the pinned Codex Cost Meter
-source and runs Codex-only, code-only arms.
+The first benchmark builds a sanitized fixture from the public
+[Codex Cost Meter source](https://github.com/deinspanjer/codex-cost-meter/tree/0b5eb56978c91e1fa1631d9ec84ac3767e8fce79)
+at the revision pinned in
+[`manifest.json`](benchmarks/vanilla-port/manifest.json), then runs Codex-only,
+code-only arms.
 
 ```bash
 .venv/bin/python -m evals.harbor.run_engineering_benchmark build-fixture \

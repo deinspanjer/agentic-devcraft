@@ -52,11 +52,16 @@ on that run being present for its main conclusions.
 The code-only Python-to-Rust port baseline proved that the fixture, controller,
 continued sessions, black-box verifier, contamination checks, provenance,
 repetitions, and reporting work together. All 12 trials passed every behavioral
-contract, so the scenario did not distinguish the arms on correctness.
+contract, so the scenario did not distinguish the arms on correctness. Within
+that ceiling, Sol at low reasoning with direct execution was the most suitable
+configuration for this task as designed: it used the fewest reported tokens and
+produced the most localized extension. This is provisional resource-efficiency
+evidence for small, well-specified work, not a general model ranking.
 
 That result has important limits:
 
-- It is a plumbing baseline, not evidence that one model configuration is best.
+- It is primarily a plumbing baseline, not evidence that one model configuration
+  is generally best or that the tied implementations were equal in quality.
 - “Subagents allowed” measured capability availability, not orchestration. No
   agent delegated. Future orchestration arms must explicitly instruct the root
   agent to orchestrate and must verify actual subagent activity.
