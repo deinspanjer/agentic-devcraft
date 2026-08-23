@@ -1,0 +1,1 @@
+Create `/app/harbor-conversation.txt` containing only the conversation marker I asked you to remember in the previous turn. Do not search the filesystem for it and do not modify `/app/turn-1-complete`.

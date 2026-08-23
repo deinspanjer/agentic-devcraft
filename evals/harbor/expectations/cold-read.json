@@ -1,0 +1,7 @@
+{
+  "claims": {
+    "C1": "false",
+    "C2": "false"
+  },
+  "replacement": "serialize-writes"
+}

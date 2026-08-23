@@ -1,0 +1,71 @@
+{
+  "version": "vanilla-port-v1",
+  "contracts": [
+    {
+      "id": "public-build",
+      "stage": "initial",
+      "description": "The requested Rust application builds.",
+      "evidence": ["initial.md"]
+    },
+    {
+      "id": "public-focused-checks",
+      "stage": "initial",
+      "description": "The Rust project's focused checks run successfully.",
+      "evidence": ["initial.md", "README.md"]
+    },
+    {
+      "id": "json-report-parity",
+      "stage": "initial",
+      "description": "Machine-readable report fields and values match the Python implementation.",
+      "evidence": ["README.md", "rollout_stats.py:main", "rollout_stats.py:report"]
+    },
+    {
+      "id": "descendant-aggregation",
+      "stage": "initial",
+      "description": "A root rollout includes linked descendant usage without losing per-rollout classifications.",
+      "evidence": ["rollout_stats.py:descendants", "rollout_stats.py:report", "rollout_stats.py:self_test"]
+    },
+    {
+      "id": "model-token-cost-aggregation",
+      "stage": "initial",
+      "description": "Token, model, reasoning, duration, and date-sensitive cost values are aggregated as exposed by Python.",
+      "evidence": ["rollout_stats.py:request_cost", "rollout_stats.py:public_stats", "rollout_stats.py:public_model_stats", "rollout_stats.py:self_test"]
+    },
+    {
+      "id": "human-report",
+      "stage": "initial",
+      "description": "Default output is a readable report containing the discoverable rollout, scope, model, token, and pricing facts.",
+      "evidence": ["README.md", "rollout_stats.py:human_report", "rollout_stats.py:self_test"]
+    },
+    {
+      "id": "missing-rollout-error",
+      "stage": "initial",
+      "description": "A missing rollout exits unsuccessfully with a visible not-found explanation.",
+      "evidence": ["rollout_stats.py:report", "rollout_stats.py:main"]
+    },
+    {
+      "id": "initial-contract-regression",
+      "stage": "extension",
+      "description": "Every initial report contract still passes after the extension.",
+      "evidence": ["extension.md", "README.md", "rollout_stats.py"]
+    },
+    {
+      "id": "built-in-price-defaults",
+      "stage": "extension",
+      "description": "Omitting --prices preserves the initial JSON report exactly.",
+      "evidence": ["extension.md"]
+    },
+    {
+      "id": "user-price-file",
+      "stage": "extension",
+      "description": "A valid --prices file can override a built-in model and add a new model using the declared per-million rates.",
+      "evidence": ["extension.md"]
+    },
+    {
+      "id": "invalid-price-file",
+      "stage": "extension",
+      "description": "Unreadable, malformed, and invalid price files fail with a useful error.",
+      "evidence": ["extension.md", "rollout_stats.py:main"]
+    }
+  ]
+}

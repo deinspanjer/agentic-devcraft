@@ -1,0 +1,29 @@
+{
+  "id": "decision-evolution",
+  "arms": [
+    {
+      "id": "control",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/decision-evolution",
+      "interaction": "scripted",
+      "skills": [],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    },
+    {
+      "id": "decision-evolution-skill",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/decision-evolution",
+      "interaction": "scripted",
+      "skills": ["proposals/skills/decision-evolution"],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    }
+  ]
+}

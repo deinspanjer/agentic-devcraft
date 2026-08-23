@@ -1,21 +1,24 @@
 # Agentic Devcraft
 
-Composable development-workflow skills for Claude Code and Codex.
+Composable development-workflow skills for Claude Code and Codex, developed
+with local behavioral evaluation rather than released on plausibility alone.
 
-## Install
+## Released
 
-### Codex
+The shared Claude/Codex plugin currently publishes only the `status` skill. See
+[USERS.md](USERS.md) for installation and use.
 
-```bash
-codex plugin marketplace add deinspanjer/agentic-devcraft
-codex plugin add agentic-devcraft@agentic-devcraft
-```
+## Under evaluation
 
-### Claude Code
+Candidate skills live outside the published plugin under
+[`proposals/skills/`](proposals/skills/). Their location is intentional: they
+can be tested directly without becoming installable marketplace content.
 
-```bash
-claude plugin marketplace add deinspanjer/agentic-devcraft
-claude plugin install agentic-devcraft@agentic-devcraft --scope user
-```
+## Methodology and evidence
 
-Run `$agentic-devcraft:status` in Codex or `/agentic-devcraft:status` in Claude Code to verify the installation.
+- [Evaluation methodology and current learnings](docs/EVALUATION.md)
+- [Developer setup and repository structure](DEVELOPERS.md)
+- [Planned evaluation and skill work](TODO.md)
+- [Human-readable baseline reports](evals/harbor/results/)
+
+Harbor evaluations are part of the local development cycle, not GitHub Actions.

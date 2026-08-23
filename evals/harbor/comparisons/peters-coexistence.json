@@ -1,0 +1,54 @@
+{
+  "id": "peters-coexistence",
+  "arms": [
+    {
+      "id": "peters-only",
+      "host": "claude-code",
+      "model": {"name": "opus", "settings": {}},
+      "fixture": "evals/harbor/fixtures/peters-coexistence",
+      "interaction": "headless",
+      "skills": [
+        "https://github.com/obra/superpowers/tree/b36e0829c6d0140e93cfef2ca599b1b07d4a7797/skills",
+        "https://aipurveyors.com/peterz/peters-toolkit/tree/9e5fe76301e25c54f330442051b41b2b17cd3d39/skills"
+      ],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 600,
+      "repetitions": 3
+    },
+    {
+      "id": "devcraft-only",
+      "host": "claude-code",
+      "model": {"name": "opus", "settings": {}},
+      "fixture": "evals/harbor/fixtures/peters-coexistence",
+      "interaction": "headless",
+      "skills": [
+        "proposals/skills/cold-read",
+        "proposals/skills/decision-evolution",
+        "proposals/skills/review-integrity"
+      ],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 600,
+      "repetitions": 3
+    },
+    {
+      "id": "combined",
+      "host": "claude-code",
+      "model": {"name": "opus", "settings": {}},
+      "fixture": "evals/harbor/fixtures/peters-coexistence",
+      "interaction": "headless",
+      "skills": [
+        "https://github.com/obra/superpowers/tree/b36e0829c6d0140e93cfef2ca599b1b07d4a7797/skills",
+        "https://aipurveyors.com/peterz/peters-toolkit/tree/9e5fe76301e25c54f330442051b41b2b17cd3d39/skills",
+        "proposals/skills/cold-read",
+        "proposals/skills/decision-evolution",
+        "proposals/skills/review-integrity"
+      ],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 600,
+      "repetitions": 3
+    }
+  ]
+}

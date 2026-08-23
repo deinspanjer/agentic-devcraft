@@ -1,0 +1,29 @@
+{
+  "id": "workflow-ownership",
+  "arms": [
+    {
+      "id": "openspec-only",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/workflow-ownership",
+      "interaction": "headless",
+      "skills": [],
+      "hooks": [],
+      "workflow_context": ["openspec"],
+      "timeout_sec": 300,
+      "repetitions": 3
+    },
+    {
+      "id": "openspec-with-devcraft-adapter",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/workflow-ownership",
+      "interaction": "headless",
+      "skills": [],
+      "hooks": ["evals/harbor/hooks/workflow-ownership.json"],
+      "workflow_context": ["openspec"],
+      "timeout_sec": 300,
+      "repetitions": 3
+    }
+  ]
+}

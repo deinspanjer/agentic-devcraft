@@ -1,0 +1,29 @@
+schema_version = "1.4"
+
+[task]
+name = "agentic-devcraft/adaptive-controller-spike"
+version = "1.0.0"
+description = "Prove that a blinded testing agent can choose a follow-up."
+authors = []
+keywords = ["spike", "conversation", "controller"]
+
+[agent]
+timeout_sec = 300.0
+user = "node"
+
+[verifier]
+timeout_sec = 30.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 4096
+gpus = 0
+mcp_servers = []
+
+[environment.env]
+
+[verifier.env]
+
+[solution.env]

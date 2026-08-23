@@ -1,0 +1,32 @@
+{
+  "id": "pocock-skills",
+  "source": {
+    "repository": "https://github.com/mattpocock/skills",
+    "revision": "5b15a47f2d7150f545fbcacbfe381787fc0230dc"
+  },
+  "hosts": ["codex", "claude-code"],
+  "unsupported": {},
+  "network_hosts": {
+    "codex": ["github.com"],
+    "claude-code": ["github.com"]
+  },
+  "install": {
+    "codex": [["skills", "add", "{checkout}", "--skill", "wait-what", "--agent", "codex", "--copy", "--yes"]],
+    "claude-code": [
+      ["claude", "plugin", "marketplace", "add", "{checkout}", "--scope", "user"],
+      ["claude", "plugin", "install", "mattpocock-skills@mattpocock", "--scope", "user"]
+    ]
+  },
+  "configuration": {
+    "codex": {"DO_NOT_TRACK": "1"},
+    "claude-code": {}
+  },
+  "discovery": {
+    "codex": {"command": ["test", "-f", "/app/.agents/skills/wait-what/SKILL.md"], "expect": ""},
+    "claude-code": {"command": ["claude", "plugin", "list", "--json"], "expect": "mattpocock-skills"}
+  },
+  "use_probe": {
+    "codex": {"prompt": "Use $wait-what and return only the writing standard it requires.", "expect": "ASD-STE100 Simplified Technical English"},
+    "claude-code": {"prompt": "Use /mattpocock-skills:writing-for-agents and return its information hierarchy.", "expect": "Information Hierarchy"}
+  }
+}

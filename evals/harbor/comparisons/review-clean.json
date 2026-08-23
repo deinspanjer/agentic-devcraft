@@ -1,0 +1,53 @@
+{
+  "id": "review-clean",
+  "arms": [
+    {
+      "id": "control",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/review-integrity/clean",
+      "interaction": "headless",
+      "skills": [],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    },
+    {
+      "id": "hook-only",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/review-integrity/clean",
+      "interaction": "headless",
+      "skills": [],
+      "hooks": ["evals/harbor/hooks/review-integrity.json"],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    },
+    {
+      "id": "skills-only",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/review-integrity/clean",
+      "interaction": "headless",
+      "skills": ["proposals/skills/review-integrity"],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    },
+    {
+      "id": "hook-plus-skills",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/review-integrity/clean",
+      "interaction": "headless",
+      "skills": ["proposals/skills/review-integrity"],
+      "hooks": ["evals/harbor/hooks/review-integrity.json"],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    }
+  ]
+}

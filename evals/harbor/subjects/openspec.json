@@ -1,0 +1,35 @@
+{
+  "id": "openspec",
+  "source": {
+    "repository": "https://github.com/Fission-AI/OpenSpec",
+    "revision": "f1b521dffac38ed6638689cd28b0c204b1eef0f1"
+  },
+  "hosts": ["codex", "claude-code"],
+  "unsupported": {},
+  "network_hosts": {
+    "codex": ["github.com", "registry.npmjs.org"],
+    "claude-code": ["github.com", "registry.npmjs.org"]
+  },
+  "install": {
+    "codex": [
+      ["npm", "install", "--global", "--prefix", "/tmp/openspec", "@fission-ai/openspec@1.10.0"],
+      ["/tmp/openspec/bin/openspec", "init", "--tools", "codex", "--profile", "core"]
+    ],
+    "claude-code": [
+      ["npm", "install", "--global", "--prefix", "/tmp/openspec", "@fission-ai/openspec@1.10.0"],
+      ["/tmp/openspec/bin/openspec", "init", "--tools", "claude", "--profile", "core"]
+    ]
+  },
+  "configuration": {
+    "codex": {"PATH": "/tmp/openspec/bin:/usr/local/bin:/usr/bin:/bin", "OPENSPEC_TELEMETRY": "0"},
+    "claude-code": {"PATH": "/tmp/openspec/bin:/usr/local/bin:/usr/bin:/bin", "OPENSPEC_TELEMETRY": "0"}
+  },
+  "discovery": {
+    "codex": {"command": ["test", "-f", "/app/.agents/skills/openspec-explore/SKILL.md"], "expect": ""},
+    "claude-code": {"command": ["test", "-f", "/app/.claude/skills/openspec-explore/SKILL.md"], "expect": ""}
+  },
+  "use_probe": {
+    "codex": {"prompt": "Use $openspec-explore and return its exact IMPORTANT sentence about Explore mode.", "expect": "Explore mode is for thinking, not implementing."},
+    "claude-code": {"prompt": "Use /openspec-explore and return its exact IMPORTANT sentence about Explore mode.", "expect": "Explore mode is for thinking, not implementing."}
+  }
+}

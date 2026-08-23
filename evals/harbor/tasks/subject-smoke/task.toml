@@ -1,0 +1,31 @@
+schema_version = "1.4"
+
+[task]
+name = "agentic-devcraft/subject-smoke"
+version = "1.0.0"
+description = "Provision, discover, and use a declared test subject."
+authors = []
+keywords = ["smoke", "subject", "lifecycle"]
+
+[agent]
+timeout_sec = 600.0
+user = "node"
+
+[verifier]
+timeout_sec = 30.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 4096
+gpus = 0
+mcp_servers = []
+network_mode = "allowlist"
+allowed_hosts = []
+
+[environment.env]
+
+[verifier.env]
+
+[solution.env]

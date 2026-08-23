@@ -1,0 +1,17 @@
+{
+  "id": "decision-rationale",
+  "identity": {
+    "host": "codex",
+    "model": "gpt-5.6-sol",
+    "settings": {"reasoning_effort": "high"}
+  },
+  "rubric": {
+    "criteria": [
+      {
+        "id": "rationale-clarity",
+        "question": "Does the rationale clearly connect the changed evidence to the replacement decision?",
+        "scale": [0, 1, 2]
+      }
+    ]
+  }
+}

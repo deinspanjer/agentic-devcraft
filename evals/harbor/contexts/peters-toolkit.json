@@ -1,0 +1,16 @@
+{
+  "id": "peters-toolkit-2.3.0",
+  "host": "claude-code",
+  "repository": "https://aipurveyors.com/peterz/peters-toolkit.git",
+  "revision": "9e5fe76301e25c54f330442051b41b2b17cd3d39",
+  "license": "MIT",
+  "skill_source": "https://aipurveyors.com/peterz/peters-toolkit/tree/9e5fe76301e25c54f330442051b41b2b17cd3d39/skills",
+  "dependencies": [
+    {
+      "repository": "https://github.com/obra/superpowers",
+      "revision": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797",
+      "license": "MIT",
+      "skill_source": "https://github.com/obra/superpowers/tree/b36e0829c6d0140e93cfef2ca599b1b07d4a7797/skills"
+    }
+  ]
+}

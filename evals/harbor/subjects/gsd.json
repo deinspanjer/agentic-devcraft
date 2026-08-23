@@ -1,0 +1,35 @@
+{
+  "id": "gsd",
+  "source": {
+    "repository": "https://github.com/open-gsd/gsd-core",
+    "revision": "dacae92730e38f5030b3d382920acc32f8b35c91"
+  },
+  "hosts": ["codex", "claude-code"],
+  "unsupported": {},
+  "network_hosts": {
+    "codex": ["github.com", "registry.npmjs.org"],
+    "claude-code": ["github.com", "registry.npmjs.org"]
+  },
+  "install": {
+    "codex": [
+      ["npm", "install", "--global", "--prefix", "/tmp/gsd", "@opengsd/gsd-core@1.11.0"],
+      ["/tmp/gsd/bin/gsd-core", "--codex", "--global", "--config-dir", "/tmp/codex-home", "--profile=core"]
+    ],
+    "claude-code": [
+      ["npm", "install", "--global", "--prefix", "/tmp/gsd", "@opengsd/gsd-core@1.11.0"],
+      ["/tmp/gsd/bin/gsd-core", "--claude", "--global", "--config-dir", "/logs/agent/sessions", "--profile=core"]
+    ]
+  },
+  "configuration": {
+    "codex": {"PATH": "/tmp/gsd/bin:/usr/local/bin:/usr/bin:/bin"},
+    "claude-code": {"PATH": "/tmp/gsd/bin:/usr/local/bin:/usr/bin:/bin"}
+  },
+  "discovery": {
+    "codex": {"command": ["test", "-f", "/home/node/.agents/skills/gsd-help/SKILL.md"], "expect": ""},
+    "claude-code": {"command": ["test", "-f", "/logs/agent/sessions/skills/gsd-help/SKILL.md"], "expect": ""}
+  },
+  "use_probe": {
+    "codex": {"prompt": "Use $gsd-help and return its default help heading.", "expect": "GSD Core"},
+    "claude-code": {"prompt": "Use /gsd-help and return its default help heading.", "expect": "GSD Core"}
+  }
+}

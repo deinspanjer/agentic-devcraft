@@ -1,0 +1,38 @@
+{
+  "id": "superpowers",
+  "source": {
+    "repository": "https://github.com/obra/superpowers",
+    "revision": "b36e0829c6d0140e93cfef2ca599b1b07d4a7797"
+  },
+  "hosts": ["codex", "claude-code"],
+  "unsupported": {},
+  "network_hosts": {
+    "codex": ["github.com"],
+    "claude-code": ["github.com"]
+  },
+  "install": {
+    "codex": [
+      ["codex", "plugin", "marketplace", "add", "{checkout}", "--json"],
+      ["codex", "plugin", "add", "superpowers@superpowers-dev", "--json"]
+    ],
+    "claude-code": [
+      ["claude", "plugin", "marketplace", "add", "{checkout}", "--scope", "user"],
+      ["claude", "plugin", "install", "superpowers@superpowers-dev", "--scope", "user"]
+    ]
+  },
+  "configuration": {"codex": {}, "claude-code": {}},
+  "discovery": {
+    "codex": {"command": ["codex", "plugin", "list", "--json"], "expect": "superpowers"},
+    "claude-code": {"command": ["claude", "plugin", "list", "--json"], "expect": "superpowers"}
+  },
+  "use_probe": {
+    "codex": {
+      "prompt": "Use $superpowers:using-superpowers and return only its rule sentence beginning with Invoke.",
+      "expect": "Invoke relevant or requested skills BEFORE any response or action"
+    },
+    "claude-code": {
+      "prompt": "Use /superpowers:using-superpowers and return only its rule sentence beginning with Invoke.",
+      "expect": "Invoke relevant or requested skills BEFORE any response or action"
+    }
+  }
+}

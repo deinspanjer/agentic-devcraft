@@ -1,0 +1,29 @@
+{
+  "id": "cold-read",
+  "arms": [
+    {
+      "id": "control",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/cold-read",
+      "interaction": "headless",
+      "skills": [],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    },
+    {
+      "id": "cold-read-skill",
+      "host": "codex",
+      "model": {"name": "gpt-5.6-sol", "settings": {"reasoning_effort": "high"}},
+      "fixture": "evals/harbor/fixtures/cold-read",
+      "interaction": "headless",
+      "skills": ["proposals/skills/cold-read"],
+      "hooks": [],
+      "workflow_context": [],
+      "timeout_sec": 300,
+      "repetitions": 3
+    }
+  ]
+}

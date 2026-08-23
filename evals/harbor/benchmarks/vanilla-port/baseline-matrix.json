@@ -1,0 +1,64 @@
+{
+  "id": "vanilla-port-codex-baseline-v1",
+  "scenario": "vanilla-port-v1",
+  "order_seed": 0,
+  "controller": {
+    "host": "codex",
+    "model": "gpt-5.6-luna",
+    "reasoning": "medium"
+  },
+  "arms": [
+    {
+      "id": "sol-high-direct",
+      "host": "codex",
+      "model": "gpt-5.6-sol",
+      "reasoning": "high",
+      "orchestration": "direct",
+      "context": "code-only",
+      "fixture": "vanilla-port-v1",
+      "prompt": "initial-prompt",
+      "verifier": "vanilla-port-v1",
+      "repetitions": 1,
+      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+    },
+    {
+      "id": "sol-low-direct",
+      "host": "codex",
+      "model": "gpt-5.6-sol",
+      "reasoning": "low",
+      "orchestration": "direct",
+      "context": "code-only",
+      "fixture": "vanilla-port-v1",
+      "prompt": "initial-prompt",
+      "verifier": "vanilla-port-v1",
+      "repetitions": 1,
+      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+    },
+    {
+      "id": "sol-high-orchestrated",
+      "host": "codex",
+      "model": "gpt-5.6-sol",
+      "reasoning": "high",
+      "orchestration": "subagents-allowed",
+      "context": "code-only",
+      "fixture": "vanilla-port-v1",
+      "prompt": "initial-prompt",
+      "verifier": "vanilla-port-v1",
+      "repetitions": 1,
+      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+    },
+    {
+      "id": "terra-high-direct",
+      "host": "codex",
+      "model": "gpt-5.6-terra",
+      "reasoning": "high",
+      "orchestration": "direct",
+      "context": "code-only",
+      "fixture": "vanilla-port-v1",
+      "prompt": "initial-prompt",
+      "verifier": "vanilla-port-v1",
+      "repetitions": 1,
+      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+    }
+  ]
+}

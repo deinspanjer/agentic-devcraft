@@ -1,0 +1,40 @@
+{
+  "id": "spec-kit",
+  "source": {
+    "repository": "https://github.com/github/spec-kit",
+    "revision": "27f50f7e6b618ea14d74dd4037f9e7c60218b16c"
+  },
+  "hosts": ["codex", "claude-code"],
+  "unsupported": {},
+  "network_hosts": {
+    "codex": ["github.com", "objects.githubusercontent.com", "pypi.org", "files.pythonhosted.org"],
+    "claude-code": ["github.com", "objects.githubusercontent.com", "pypi.org", "files.pythonhosted.org"]
+  },
+  "install": {
+    "codex": [
+      ["uv", "tool", "install", "--from", "{checkout}", "specify-cli"],
+      ["specify", "init", "--here", "--force", "--non-interactive", "--integration", "codex"]
+    ],
+    "claude-code": [
+      ["uv", "tool", "install", "--from", "{checkout}", "specify-cli"],
+      ["specify", "init", "--here", "--force", "--non-interactive", "--integration", "claude"]
+    ]
+  },
+  "configuration": {"codex": {}, "claude-code": {}},
+  "discovery": {
+    "codex": {"command": ["test", "-f", "/app/.agents/skills/speckit-constitution/SKILL.md"], "expect": ""},
+    "claude-code": {"command": ["test", "-f", "/app/.claude/skills/speckit-constitution/SKILL.md"], "expect": ""}
+  },
+  "use_probe": {
+    "codex": {
+      "prompt": "Use $speckit-constitution to update the project constitution with this principle: Keep changes small and verified.",
+      "expect": "constitution",
+      "expect_paths": ["/app/.specify/memory/constitution.md"]
+    },
+    "claude-code": {
+      "prompt": "Use /speckit-constitution to update the project constitution with this principle: Keep changes small and verified.",
+      "expect": "constitution",
+      "expect_paths": ["/app/.specify/memory/constitution.md"]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "files": {
+    "greeting.txt": "hello\n",
+    "openspec/changes/add-greeting/tasks.md": "- [x] Create `greeting.txt` containing `hello`.\n"
+  },
+  "allowed_changes": [
+    "greeting.txt",
+    "openspec/changes/add-greeting/tasks.md"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "basis_id": "B1",
+  "decision": {"id": "D2", "value": "retain-7-days"},
+  "superseded": {"id": "D1", "replaced_by": "D2"},
+  "downstream": {
+    "batch-window": "7-days-max",
+    "storage-estimate": "210-gb"
+  }
+}

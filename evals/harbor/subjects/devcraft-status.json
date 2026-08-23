@@ -1,0 +1,50 @@
+{
+  "id": "devcraft-status",
+  "source": {
+    "repository": "https://github.com/deinspanjer/agentic-devcraft",
+    "revision": "c6ee67ba6ae86f3d5e3d8f6b9365a85ff3deb43b"
+  },
+  "hosts": [
+    "codex",
+    "claude-code"
+  ],
+  "unsupported": {},
+  "network_hosts": {
+    "codex": ["github.com"],
+    "claude-code": ["github.com"]
+  },
+  "install": {
+    "codex": [
+      ["codex", "plugin", "marketplace", "add", "{checkout}", "--json"],
+      ["codex", "plugin", "add", "agentic-devcraft@agentic-devcraft", "--json"]
+    ],
+    "claude-code": [
+      ["claude", "plugin", "marketplace", "add", "{checkout}", "--scope", "user"],
+      ["claude", "plugin", "install", "agentic-devcraft@agentic-devcraft", "--scope", "user"]
+    ]
+  },
+  "configuration": {
+    "codex": {},
+    "claude-code": {}
+  },
+  "discovery": {
+    "codex": {
+      "command": ["codex", "plugin", "list", "--json"],
+      "expect": "agentic-devcraft"
+    },
+    "claude-code": {
+      "command": ["claude", "plugin", "list", "--json"],
+      "expect": "agentic-devcraft"
+    }
+  },
+  "use_probe": {
+    "codex": {
+      "prompt": "Use $agentic-devcraft:status and return only its status line.",
+      "expect": "Agentic Devcraft: active (0.1.0)"
+    },
+    "claude-code": {
+      "prompt": "Use /agentic-devcraft:status and return only its status line.",
+      "expect": "Agentic Devcraft: active (commit-versioned development build)"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+evals/harbor/jobs/
+evals/harbor/generated/
+.agents/skills/
+.claude/commands/opsx/
+.claude/skills/openspec-*/

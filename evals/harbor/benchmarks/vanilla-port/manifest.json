@@ -1,0 +1,60 @@
+{
+  "id": "vanilla-port-v1",
+  "source": {
+    "repository_env": "DEVCRAFT_COST_METER_REPO",
+    "revision": "0b5eb56978c91e1fa1631d9ec84ac3767e8fce79",
+    "files": [
+      {
+        "id": "python-report",
+        "path": "python-prototype/rollout_stats.py",
+        "destination": "rollout_stats.py",
+        "sha256": "99c6329a5911fc840268c4ac1c016ee345335864fd5fa4ff240b0f53cd2d3f5f",
+        "privacy": "public-source"
+      }
+    ]
+  },
+  "resources": [
+    {
+      "id": "fixture-readme",
+      "path": "README.md",
+      "sha256": "fb8e16e8bf88c33f64d60b00f95b9dd7f5049dbb758126db999734cee2d93ce3",
+      "privacy": "subject-visible"
+    },
+    {
+      "id": "initial-prompt",
+      "path": "initial.md",
+      "sha256": "8c54bf68219eff0271f1ace2cd488a96627d9785aa44c5bbb173af5df4903ec1",
+      "privacy": "controller-only"
+    },
+    {
+      "id": "extension-prompt",
+      "path": "extension.md",
+      "sha256": "2bf4a2abb8bce1378be3f97b0c5eed00aaf6f6f06053e1b6eeccb1febd5919cc",
+      "privacy": "controller-only-until-extension"
+    },
+    {
+      "id": "answer-policy",
+      "path": "answer-policy.json",
+      "sha256": "bb2f723c0c877f46ddb84ec07265d5936b23665bcfb502ef4d083d7004b14eba",
+      "privacy": "controller-only"
+    },
+    {
+      "id": "contract-inventory",
+      "path": "contracts.json",
+      "sha256": "cf8312ddbbd2c12b1e6966e26c7586adda2689850f7a2414046e132c1564868f",
+      "privacy": "evaluator-only"
+    }
+  ],
+  "outputs": {
+    "generated_path": "evals/harbor/generated/vanilla-port",
+    "fixture_subdir": "fixture",
+    "evaluator_subdir": "evaluator",
+    "audit_subdir": "private-audit"
+  },
+  "privacy": {
+    "committed": "sanitized",
+    "generated": "ignored",
+    "subject": "fixture-only",
+    "evaluator": "never-subject-visible"
+  }
+}
