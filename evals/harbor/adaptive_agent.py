@@ -4,6 +4,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import tempfile
 import time
 from pathlib import Path
@@ -15,7 +16,12 @@ from harbor.agents.installed.codex import Codex
 from harbor.models.agent.context import AgentContext
 
 from evals.harbor.controller import drive_conversation
-from evals.harbor.engineering_benchmark import authority_violation, tree_digest, tree_inventory
+from evals.harbor.engineering_benchmark import (
+    authority_violation,
+    is_non_product_path,
+    tree_digest,
+    tree_inventory,
+)
 from evals.harbor.port_verifier import verify_extension, verify_initial
 
 
@@ -55,6 +61,28 @@ def normalize_controller_decision(value: dict[str, Any]) -> dict[str, Any]:
             ),
         }
     return {key: item for key, item in value.items() if item is not None}
+
+
+def checkpoint_git_state(repository: Path) -> dict[str, Any]:
+    def git(*arguments: str) -> str:
+        return subprocess.run(
+            ["git", "-C", str(repository), *arguments],
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.rstrip()
+
+    changed_paths = [
+        line[3:]
+        for line in git("status", "--porcelain=v1").splitlines()
+        if len(line) > 3 and not is_non_product_path(line[3:])
+    ]
+    return {
+        "branch": git("rev-parse", "--abbrev-ref", "HEAD"),
+        "head": git("rev-parse", "HEAD"),
+        "recent_commits": git("log", "-5", "--format=%s").splitlines(),
+        "changed_paths": changed_paths,
+    }
 
 
 class AdaptiveAgent(BaseAgent):
@@ -406,7 +434,7 @@ class AdaptiveAgent(BaseAgent):
         destination = self.logs_dir / "snapshots" / stage
         destination.mkdir(parents=True)
         await environment.download_dir("/app", destination)
-        observation = await self._observation(environment, stage)
+        git_state = checkpoint_git_state(destination)
         trajectory = self._trajectory()
         verifier = {"status": "not_configured"}
         if self._verifier_contracts and self._verifier_oracle:
@@ -430,10 +458,7 @@ class AdaptiveAgent(BaseAgent):
             "parent_workspace_digest": parent_digest,
             "transcript": list(transcript),
             "trajectory": trajectory,
-            "git": {
-                key: observation[key]
-                for key in ("branch", "head", "recent_commits", "changed_paths")
-            },
+            "git": git_state,
             "effective_configuration": self._effective_configuration,
             "controller": controller_result,
             "verifier": verifier,

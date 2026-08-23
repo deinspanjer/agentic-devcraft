@@ -1,5 +1,6 @@
 import json
 import shutil
+import subprocess
 import tempfile
 import time
 import unittest
@@ -15,6 +16,31 @@ from evals.harbor.adaptive_agent import (
     normalize_controller_decision,
 )
 from evals.harbor.controller import validate_decision
+
+
+def initialize_git_fixture(workspace: Path) -> None:
+    subprocess.run(
+        ["git", "init", "--quiet", "--initial-branch=main", str(workspace)],
+        check=True,
+    )
+    subprocess.run(["git", "-C", str(workspace), "add", "."], check=True)
+    subprocess.run(
+        [
+            "git",
+            "-C",
+            str(workspace),
+            "-c",
+            "user.name=Fixture",
+            "-c",
+            "user.email=fixture@example.invalid",
+            "commit",
+            "--quiet",
+            "--allow-empty",
+            "-m",
+            "fixture",
+        ],
+        check=True,
+    )
 
 
 class FakeEnvironment:
@@ -33,6 +59,15 @@ class FakeEnvironment:
     async def download_dir(self, _source: str, target: Path) -> None:
         self.assert_target_exists = target.is_dir()
         shutil.copytree(self.workspace, target, dirs_exist_ok=True)
+
+
+class MissingGitObservationEnvironment(FakeEnvironment):
+    async def exec(self, command, **_):
+        if command.startswith("git -C /app"):
+            return SimpleNamespace(
+                stdout="", stderr="live Git observation unavailable", return_code=1
+            )
+        return await super().exec(command)
 
 
 class FakeSubject:
@@ -149,6 +184,7 @@ class AdaptiveScenarioTest(unittest.IsolatedAsyncioTestCase):
             workspace = root / "workspace"
             logs.mkdir()
             workspace.mkdir()
+            initialize_git_fixture(workspace)
             policy_path = root / "policy.json"
             extension_path = root / "extension.md"
             policy_path.write_text(
@@ -218,6 +254,38 @@ class AdaptiveScenarioTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual([request["stage"] for request in requests], ["initial", "extension"])
             self.assertNotIn("arm", repr(requests).lower())
             self.assertNotIn("expected", repr(requests).lower())
+
+    async def test_checkpoint_records_downloaded_git_state_without_runtime_artifacts(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            logs = root / "logs"
+            workspace = root / "workspace"
+            logs.mkdir()
+            workspace.mkdir()
+            (workspace / "report.py").write_text("before\n")
+            initialize_git_fixture(workspace)
+            (workspace / "report.py").write_text("after\n")
+            (workspace / "__pycache__").mkdir()
+            (workspace / "__pycache__/report.cpython-314.pyc").write_bytes(b"cache")
+
+            agent = AdaptiveAgent(
+                logs_dir=logs,
+                model_name="gpt-5.6-sol",
+                subject_agent="codex",
+            )
+            subject = FakeSubject(logs, workspace, "")
+            subject._record("agent", "done")
+            agent._subject = subject
+            checkpoint = await agent._checkpoint(
+                MissingGitObservationEnvironment(workspace),
+                "initial",
+                [],
+                {"termination": "completed", "decisions": []},
+            )
+
+            self.assertEqual(checkpoint["git"]["branch"], "main")
+            self.assertTrue(checkpoint["git"]["head"])
+            self.assertEqual(checkpoint["git"]["changed_paths"], ["report.py"])
 
 
 if __name__ == "__main__":

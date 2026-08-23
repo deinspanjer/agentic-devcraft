@@ -6,7 +6,13 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from evals.harbor.engineering_benchmark import privacy_issues, redact, sha256_file, tree_digest
+from evals.harbor.engineering_benchmark import (
+    is_non_product_path,
+    privacy_issues,
+    redact,
+    sha256_file,
+    tree_digest,
+)
 
 
 def workspace_state(root: Path) -> list[dict[str, Any]]:
@@ -137,12 +143,12 @@ def compare_stage_snapshots(initial: Path, extension: Path) -> dict[str, Any]:
     initial_state = {
         item["path"]: item
         for item in workspace_state(initial)
-        if not item["path"].startswith("target/")
+        if not is_non_product_path(item["path"])
     }
     extension_state = {
         item["path"]: item
         for item in workspace_state(extension)
-        if not item["path"].startswith("target/")
+        if not is_non_product_path(item["path"])
     }
     changed = sorted(
         path

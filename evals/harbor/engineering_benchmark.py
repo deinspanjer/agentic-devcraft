@@ -73,6 +73,15 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def is_non_product_path(path: str) -> bool:
+    relative = Path(path)
+    return (
+        bool(relative.parts and relative.parts[0] in {".git", "target"})
+        or "__pycache__" in relative.parts
+        or relative.suffix in {".pyc", ".pyo"}
+    )
+
+
 def tree_inventory(root: Path, *, include_git: bool = False) -> list[dict[str, Any]]:
     entries: list[dict[str, Any]] = []
     for path in sorted(root.rglob("*")):
@@ -401,8 +410,7 @@ def local_fixture_source_digest(source: Path) -> str:
     inventory = [
         entry
         for entry in tree_inventory(source)
-        if "__pycache__" not in Path(entry["path"]).parts
-        and Path(entry["path"]).suffix not in {".pyc", ".pyo"}
+        if not is_non_product_path(entry["path"])
     ]
     return sha256_bytes(json.dumps(inventory, sort_keys=True).encode())
 

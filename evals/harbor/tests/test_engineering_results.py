@@ -52,6 +52,14 @@ class EngineeringResultTest(unittest.TestCase):
             (extension / "target").mkdir()
             (initial / "target/build").write_text("initial")
             (extension / "target/build").write_text("extension")
+            (initial / "__pycache__").mkdir()
+            (extension / "__pycache__").mkdir()
+            (initial / "__pycache__/report.cpython-314.pyc").write_bytes(b"initial")
+            (extension / "__pycache__/report.cpython-314.pyc").write_bytes(b"extension")
+            (initial / ".git").mkdir()
+            (extension / ".git").mkdir()
+            (initial / ".git/index").write_bytes(b"initial")
+            (extension / ".git/index").write_bytes(b"extension")
             (extension / "tests").mkdir()
             (extension / "tests/cli.rs").write_text("fn price_test() {}\n")
             checkpoints = [
@@ -110,6 +118,10 @@ class EngineeringResultTest(unittest.TestCase):
             comparison = result["stages"]["extension"]["engineering"]["extension_comparison"]
             self.assertEqual(comparison["pricing_owners"], ["src/pricing.rs"])
             self.assertNotIn("target/build", comparison["changed_paths"])
+            self.assertNotIn(
+                "__pycache__/report.cpython-314.pyc", comparison["changed_paths"]
+            )
+            self.assertNotIn(".git/index", comparison["changed_paths"])
             self.assertEqual(comparison["extension_changed_file_count"], 2)
             self.assertIn("not design-quality", comparison["interpretation"])
 
