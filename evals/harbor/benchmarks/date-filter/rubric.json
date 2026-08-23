@@ -1,0 +1,107 @@
+{
+  "version": "date-filter-rubric-v1",
+  "scenario": "date-filter-v1",
+  "aggregation": "profile-only",
+  "required_behavior_source": "contracts.json",
+  "scoring_rules": {
+    "explicit_requirement_ceiling": "If any required contract fails, explicit-requirements cannot exceed 2.",
+    "non_compensation": "Engineering robustness and other criteria cannot offset a missing explicit requirement.",
+    "missing_evidence": "Use N/A rather than zero when the declared evidence is unavailable."
+  },
+  "criteria": [
+    {
+      "id": "explicit-requirements",
+      "ideal": "Every required contract passes at both stages without regressions.",
+      "acceptable": "An implementation may use any standard-library structure that produces the required observable behavior.",
+      "evidence": ["verifier contracts", "stage snapshots", "focused checks"],
+      "anchors": {
+        "0": "Requested behavior is absent or contradictory.",
+        "1": "Only a minority of requested behavior works.",
+        "2": "Core behavior works but at least one important explicit requirement is missing.",
+        "3": "All load-bearing requirements work with only a minor explicit omission.",
+        "4": "All required contracts pass without regression."
+      }
+    },
+    {
+      "id": "engineering-robustness",
+      "ideal": "Date parsing and range handling fail clearly at invalid boundaries without obscuring the simple CLI design.",
+      "acceptable": "Standard argparse failures are sufficient for malformed dates; inverted-range policy may vary if it is deliberate and documented.",
+      "evidence": ["unscored robustness probes", "implementation", "tests"],
+      "anchors": {
+        "0": "Common invalid input crashes opaquely or corrupts output.",
+        "1": "Several obvious boundary failures are unhandled.",
+        "2": "Normal inputs work but error behavior is inconsistent or unclear.",
+        "3": "Material edge conditions are handled clearly with minor gaps.",
+        "4": "Discoverable edge conditions are handled deliberately, simply, and consistently."
+      }
+    },
+    {
+      "id": "documentation-consistency",
+      "ideal": "README examples and option semantics match both stages of the implemented CLI.",
+      "acceptable": "Equivalent concise wording and examples are acceptable.",
+      "evidence": ["README.md", "CLI help", "prompts", "tests"],
+      "anchors": {
+        "0": "Documentation is absent or materially contradicts behavior.",
+        "1": "New behavior is mostly undocumented or inconsistent.",
+        "2": "Basic use is documented but important semantics or examples are missing.",
+        "3": "Documentation is complete with only minor clarity issues.",
+        "4": "Documentation is concise, complete, and consistent with code and checks."
+      }
+    },
+    {
+      "id": "scope-control",
+      "ideal": "The change stays within the existing small standard-library CLI, its tests, and README.",
+      "acceptable": "A small additional local module is acceptable when it creates a clearer ownership boundary.",
+      "evidence": ["changed paths", "diff", "dependencies", "process artifacts"],
+      "anchors": {
+        "0": "The solution is dominated by unrelated or harmful work.",
+        "1": "Substantial speculative scaffolding obscures the requested change.",
+        "2": "The task works but includes meaningful unnecessary expansion.",
+        "3": "Nearly every touched file has a task-linked reason.",
+        "4": "Every touched file is necessary and the solution uses existing or standard-library structure."
+      }
+    },
+    {
+      "id": "test-quality",
+      "ideal": "Focused tests cover default behavior, inclusive boundaries, composition, and meaningful failures through the CLI or stable public functions.",
+      "acceptable": "Equivalent behavioral coverage may use subprocess or public-function tests.",
+      "evidence": ["test files", "test execution", "targeted defect calibration"],
+      "anchors": {
+        "0": "No meaningful runnable checks exist.",
+        "1": "Checks are largely patch-coupled, tautological, or miss core behavior.",
+        "2": "Happy paths are covered but important invariants or regressions are not.",
+        "3": "Behavioral checks cover the main invariants with minor gaps.",
+        "4": "Focused behavior and invariant checks would catch plausible regressions without coupling to implementation."
+      }
+    },
+    {
+      "id": "discovery-and-interaction",
+      "ideal": "The agent inspects the implementation, tests, and README; asks only about material ambiguity; and requires no avoidable steering.",
+      "acceptable": "No owner question is necessary when supplied evidence determines an acceptable answer.",
+      "evidence": ["trajectory", "questions", "assumptions", "owner answers"],
+      "anchors": {
+        "0": "The agent ignores supplied evidence or repeatedly requires avoidable correction.",
+        "1": "Discovery is shallow and material assumptions are unsupported.",
+        "2": "The agent finds core evidence but misses relevant repository guidance.",
+        "3": "Discovery and interaction are effective with only minor omissions.",
+        "4": "The agent uses all relevant evidence and surfaces only genuinely material uncertainty."
+      }
+    },
+    {
+      "id": "resource-efficiency",
+      "ideal": "The complete, robust result uses proportionate turns, tools, tokens, time, and files.",
+      "acceptable": "Higher resource use is acceptable only when accompanied by visible improvement in another criterion.",
+      "evidence": ["host metrics", "trajectory", "changed paths", "frozen price snapshot when available"],
+      "anchors": {
+        "0": "Resource use is extreme without a usable result.",
+        "1": "Large avoidable cost or churn produces an incomplete result.",
+        "2": "Resource use is disproportionate to the quality delivered.",
+        "3": "Resource use is reasonable for the delivered quality.",
+        "4": "The result reaches the quality frontier with minimal avoidable cost and churn."
+      }
+    }
+  ],
+  "not_scored": {
+    "orchestration": "This microbenchmark is too small to justify a directed-orchestration arm. Capability and actual subagent activity remain telemetry only."
+  }
+}

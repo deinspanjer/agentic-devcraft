@@ -357,13 +357,63 @@ def build_fixture(
     return record
 
 
+def build_local_fixture(source: Path, output_root: Path) -> dict[str, Any]:
+    if not source.is_dir():
+        raise ValueError(f"fixture source is unavailable: {source}")
+    if output_root.exists() and any(output_root.iterdir()):
+        raise ValueError(f"generated output is not empty: {output_root}")
+    output_root.mkdir(parents=True, exist_ok=True)
+    fixture = output_root / "fixture"
+    shutil.copytree(
+        source,
+        fixture,
+        ignore=shutil.ignore_patterns("__pycache__", "*.py[co]"),
+    )
+    subprocess.run(
+        ["git", "init", "--quiet", "--initial-branch=main", str(fixture)],
+        check=True,
+    )
+    _git(fixture, "add", ".")
+    fixed_env = {
+        "GIT_AUTHOR_NAME": "Devcraft Fixture",
+        "GIT_AUTHOR_EMAIL": "fixture@example.invalid",
+        "GIT_COMMITTER_NAME": "Devcraft Fixture",
+        "GIT_COMMITTER_EMAIL": "fixture@example.invalid",
+        "GIT_AUTHOR_DATE": "2000-01-01T00:00:00Z",
+        "GIT_COMMITTER_DATE": "2000-01-01T00:00:00Z",
+    }
+    _git(fixture, "commit", "--quiet", "-m", "chore: create code-only fixture", env=fixed_env)
+    if issues := scan_fixture(fixture):
+        raise ValueError("fixture contamination: " + "; ".join(issues))
+    record = {
+        "benchmark": source.parent.name,
+        "source_digest": local_fixture_source_digest(source),
+        "fixture_head": _git(fixture, "rev-parse", "HEAD"),
+        "fixture_tree": _git(fixture, "rev-parse", "HEAD^{tree}"),
+        "fixture_digest": tree_digest(fixture),
+        "inventory": tree_inventory(fixture),
+    }
+    (output_root / "build-record.json").write_text(json.dumps(record, indent=2) + "\n")
+    return record
+
+
+def local_fixture_source_digest(source: Path) -> str:
+    inventory = [
+        entry
+        for entry in tree_inventory(source)
+        if "__pycache__" not in Path(entry["path"]).parts
+        and Path(entry["path"]).suffix not in {".pyc", ".pyo"}
+    ]
+    return sha256_bytes(json.dumps(inventory, sort_keys=True).encode())
+
+
 def validate_matrix(value: Any) -> dict[str, Any]:
     if not isinstance(value, dict) or set(value) != MATRIX_FIELDS:
         raise ValueError(f"matrix fields must be exactly {sorted(MATRIX_FIELDS)}")
     if not isinstance(value["id"], str) or not re.fullmatch(r"[a-z0-9-]+", value["id"]):
         raise ValueError("matrix id is invalid")
-    if value["scenario"] != "vanilla-port-v1":
-        raise ValueError("matrix scenario must be vanilla-port-v1")
+    if value["scenario"] not in {"vanilla-port-v1", "date-filter-v1"}:
+        raise ValueError("matrix scenario is unsupported")
     if isinstance(value["order_seed"], bool) or not isinstance(value["order_seed"], int):
         raise ValueError("order_seed must be an integer")
     controller = value["controller"]
@@ -385,7 +435,7 @@ def validate_matrix(value: Any) -> dict[str, Any]:
             raise ValueError("arm ids must be unique")
         ids.add(arm["id"])
         if arm["host"] != "codex":
-            raise ValueError("vanilla port baseline is Codex-only")
+            raise ValueError("engineering baseline is Codex-only")
         if not isinstance(arm["model"], str) or not arm["model"]:
             raise ValueError(f"arms[{index}].model is invalid")
         if arm["reasoning"] not in REASONING_LEVELS:
@@ -395,8 +445,8 @@ def validate_matrix(value: Any) -> dict[str, Any]:
         if arm["orchestration"] not in ORCHESTRATION:
             raise ValueError(f"arms[{index}].orchestration is invalid")
         if arm["context"] != "code-only" or arm["fixture"] != value["scenario"]:
-            raise ValueError("first baseline requires code-only vanilla-port-v1")
-        if arm["prompt"] != "initial-prompt" or arm["verifier"] != "vanilla-port-v1":
+            raise ValueError("engineering baseline requires code-only context and its declared fixture")
+        if arm["prompt"] != "initial-prompt" or arm["verifier"] != value["scenario"]:
             raise ValueError("arm prompt or verifier differs from the scenario")
         if isinstance(arm["repetitions"], bool) or not isinstance(arm["repetitions"], int) or arm["repetitions"] < 1:
             raise ValueError(f"arms[{index}].repetitions must be positive")

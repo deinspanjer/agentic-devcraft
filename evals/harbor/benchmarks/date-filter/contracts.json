@@ -1,0 +1,93 @@
+{
+  "version": "date-filter-v1",
+  "contracts": [
+    {
+      "id": "focused-checks",
+      "stage": "initial",
+      "kind": "required",
+      "scored": true,
+      "description": "The repository's focused unittest suite passes.",
+      "evidence": ["fixture/README.md", "fixture/test_report.py"]
+    },
+    {
+      "id": "default-report-regression",
+      "stage": "initial",
+      "kind": "required",
+      "scored": true,
+      "description": "Omitting --since preserves the existing report result.",
+      "evidence": ["initial.md", "fixture/report.py", "fixture/test_report.py"]
+    },
+    {
+      "id": "since-inclusive",
+      "stage": "initial",
+      "kind": "required",
+      "scored": true,
+      "description": "--since includes records on the boundary and excludes earlier records.",
+      "evidence": ["initial.md"]
+    },
+    {
+      "id": "since-documentation",
+      "stage": "initial",
+      "kind": "required",
+      "scored": true,
+      "description": "User documentation explains --since and its date format.",
+      "evidence": ["initial.md", "fixture/README.md"]
+    },
+    {
+      "id": "invalid-since",
+      "stage": "initial",
+      "kind": "robustness",
+      "scored": false,
+      "description": "An invalid --since value fails visibly.",
+      "evidence": ["fixture/report.py"]
+    },
+    {
+      "id": "initial-contract-regression",
+      "stage": "extension",
+      "kind": "required",
+      "scored": true,
+      "description": "All initial required behavior remains intact.",
+      "evidence": ["extension.md"]
+    },
+    {
+      "id": "until-inclusive",
+      "stage": "extension",
+      "kind": "required",
+      "scored": true,
+      "description": "--until includes records on the boundary and excludes later records.",
+      "evidence": ["extension.md"]
+    },
+    {
+      "id": "combined-range",
+      "stage": "extension",
+      "kind": "required",
+      "scored": true,
+      "description": "--since and --until compose as a closed date range.",
+      "evidence": ["extension.md"]
+    },
+    {
+      "id": "until-documentation",
+      "stage": "extension",
+      "kind": "required",
+      "scored": true,
+      "description": "User documentation explains --until and combined use.",
+      "evidence": ["extension.md", "fixture/README.md"]
+    },
+    {
+      "id": "invalid-until",
+      "stage": "extension",
+      "kind": "robustness",
+      "scored": false,
+      "description": "An invalid --until value fails visibly.",
+      "evidence": ["fixture/report.py"]
+    },
+    {
+      "id": "inverted-range",
+      "stage": "extension",
+      "kind": "robustness",
+      "scored": false,
+      "description": "The CLI handles a since date later than until deliberately and visibly.",
+      "evidence": ["extension.md"]
+    }
+  ]
+}

@@ -106,12 +106,21 @@ def trajectory_evidence(
         for key in ("input_tokens", "cached_input_tokens", "output_tokens")
     }
     return {
-        "source_inspection": bool(re.search(r"rollout_stats\.py", tool_text)),
-        "self_test_inspection": bool(re.search(r"(?:--self-test|self_test)", tool_text)),
+        "source_inspection": bool(re.search(r"(?:rollout_stats|report)\.py", tool_text)),
+        "self_test_inspection": bool(
+            re.search(r"(?:--self-test|self_test|test_report\.py|unittest)", tool_text)
+        ),
         "questions": [line.strip() for line in message_text.splitlines() if "?" in line],
         "assumptions": [line.strip() for line in message_text.splitlines() if re.search(r"\bassum", line, re.IGNORECASE)],
         "commands": commands,
-        "focused_checks": [line for line in commands if re.search(r"\b(?:cargo\s+(?:test|check)|python3?\s+\S+\s+--self-test)\b", line)],
+        "focused_checks": [
+            line
+            for line in commands
+            if re.search(
+                r"\b(?:cargo\s+(?:test|check)|python3?\s+(?:-m\s+unittest|\S+\s+--self-test))\b",
+                line,
+            )
+        ],
         "commits": [line for line in commands if re.search(r"\bgit\s+commit\b", line)],
         "cleanup_commands": [line for line in commands if re.search(r"\b(?:rm|rmdir|git\s+clean)\b", line)],
         "turns": len(agent_messages),
@@ -205,6 +214,7 @@ def build_engineering_result(
                 "contracts": contracts,
                 "contracts_passed": sum(bool(item.get("passed")) for item in contracts),
                 "contracts_total": len(contracts),
+                "robustness": verifier.get("robustness", []),
             },
             "engineering": {
                 "workspace_digest": checkpoint.get("workspace_digest"),
@@ -245,13 +255,36 @@ def blinded_qualitative_input(result: dict[str, Any]) -> dict[str, Any]:
                 "engineering": value.get("engineering"),
                 "process": {
                     key: value.get("process", {}).get(key)
-                    for key in ("source_inspection", "self_test_inspection", "questions", "assumptions", "focused_checks", "process_artifacts")
+                    for key in (
+                        "source_inspection",
+                        "self_test_inspection",
+                        "questions",
+                        "assumptions",
+                        "focused_checks",
+                        "process_artifacts",
+                        "turns",
+                        "tool_calls",
+                        "duration_sec",
+                        "reported_tokens",
+                    )
                     if key in value.get("process", {})
                 },
             }
             for stage, value in result.get("stages", {}).items()
         },
-        "rubric": ["scope_control", "module_ownership", "duplication", "focused_checks", "repository_instruction_conflicts"],
+        "rubric": {
+            "kind": "shared-framework",
+            "criteria": [
+                "explicit-requirements",
+                "engineering-robustness",
+                "documentation-consistency",
+                "scope-control",
+                "design-ownership-and-extension-locality",
+                "test-quality",
+                "discovery-and-interaction",
+                "resource-efficiency",
+            ],
+        },
     }
 
 
@@ -282,6 +315,7 @@ def offline_rescore(
     oracle_script: Path,
     contracts_path: Path,
     output: Path,
+    verifier_module: str = "evals.harbor.port_verifier",
 ) -> dict[str, Any]:
     if output.exists():
         raise FileExistsError(output)
@@ -289,7 +323,11 @@ def offline_rescore(
     snapshot_digests = {
         stage: tree_digest(path, include_git=True) for stage, path in snapshots.items()
     }
-    from evals.harbor.port_verifier import verify_extension, verify_initial
+    import importlib
+
+    module = importlib.import_module(verifier_module)
+    verify_initial = module.verify_initial
+    verify_extension = module.verify_extension
 
     verifiers = {}
     if "initial" in snapshots:
@@ -311,7 +349,7 @@ def offline_rescore(
         "original_trial_digest": hashlib.sha256(original_bytes).hexdigest(),
         "snapshot_digests": snapshot_digests,
         "contracts_digest": sha256_file(contracts_path),
-        "oracle_digest": sha256_file(oracle_script),
+        "reference_digest": sha256_file(oracle_script),
         "verifiers": verifiers,
     }
     if issues := privacy_issues(record):

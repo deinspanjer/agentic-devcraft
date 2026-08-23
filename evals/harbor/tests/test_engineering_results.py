@@ -8,6 +8,7 @@ from evals.harbor.trial_result import (
     blinded_qualitative_input,
     build_engineering_result,
     offline_rescore,
+    trajectory_evidence,
     write_qualitative_record,
 )
 
@@ -63,6 +64,9 @@ class EngineeringResultTest(unittest.TestCase):
                     "verifier": {
                         "status": "passed",
                         "contracts": [{"id": "contract", "passed": True}],
+                        "robustness": [
+                            {"id": "edge", "outcome": "accepted", "detail": "observed"}
+                        ],
                     },
                 }
                 for stage in ("initial", "extension")
@@ -98,6 +102,10 @@ class EngineeringResultTest(unittest.TestCase):
             )
             process = result["stages"]["initial"]["process"]
             self.assertTrue(process["source_inspection"])
+            self.assertEqual(
+                result["stages"]["initial"]["product"]["robustness"][0]["id"],
+                "edge",
+            )
             self.assertEqual(process["duration_sec"], {"available": False, "value": None})
             comparison = result["stages"]["extension"]["engineering"]["extension_comparison"]
             self.assertEqual(comparison["pricing_owners"], ["src/pricing.rs"])
@@ -108,6 +116,10 @@ class EngineeringResultTest(unittest.TestCase):
             blinded = blinded_qualitative_input(result)
             self.assertNotIn("secret-arm", repr(blinded))
             self.assertNotIn("secret-model", repr(blinded))
+            self.assertEqual(blinded["rubric"]["kind"], "shared-framework")
+            self.assertIn(
+                "explicit-requirements", blinded["rubric"]["criteria"]
+            )
             qualitative_path = root / "qualitative.json"
             qualitative = write_qualitative_record(
                 qualitative_path, result, {"scope_control": "reviewed"}
@@ -123,6 +135,26 @@ class EngineeringResultTest(unittest.TestCase):
                 summary["arms"]["secret-arm"]["stages"]["initial"]["measures"]["product.contracts_passed"]["median"],
                 1,
             )
+
+    def test_discovery_telemetry_recognizes_the_calibration_fixture(self):
+        evidence = trajectory_evidence(
+            {
+                "steps": [
+                    {
+                        "source": "agent",
+                        "message": "done",
+                        "tool_calls": [
+                            {
+                                "command": "sed -n '1,200p' report.py; sed -n '1,200p' test_report.py; python3 -m unittest -v"
+                            }
+                        ],
+                    }
+                ]
+            }
+        )
+        self.assertTrue(evidence["source_inspection"])
+        self.assertTrue(evidence["self_test_inspection"])
+        self.assertTrue(evidence["focused_checks"])
 
     def test_offline_rescore_is_append_only(self):
         from evals.harbor.tests.test_port_verifier import CONTRACTS, ORACLE

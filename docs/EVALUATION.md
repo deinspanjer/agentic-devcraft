@@ -72,12 +72,21 @@ That result has important limits:
 See the [human baseline report](../evals/harbor/results/2026-08-22-vanilla-port-codex-baseline.md)
 and [machine baseline](../evals/harbor/baselines/vanilla-port-codex-v1.json).
 
-## Target rubric
+## Rubric framework
 
-Each scenario must define an evidence-backed ideal before execution: load-bearing
-requirements, expected documentation effects, acceptable implementation shapes,
-known ambiguities, and a frozen owner-answer policy. Hidden criteria may enforce
-only behavior discoverable from the supplied materials or explicit owner policy.
+This document defines shared evaluation dimensions, not a complete rubric by
+itself. Each scenario must supply an evidence-backed rubric before execution:
+load-bearing requirements, expected documentation effects, acceptable
+implementation shapes, known ambiguities, a frozen owner-answer policy, evidence
+sources, and scenario-specific scoring anchors. Hidden criteria may enforce only
+behavior discoverable from the supplied materials or explicit owner policy.
+
+A full scenario rubric must identify which criteria determine behavioral
+pass/fail, distinguish required behavior from engineering judgment, describe the
+evidence available to a judge, provide acceptable alternatives, and calibrate
+its anchors against compliant implementations and targeted defects. Rubric
+profiles remain unaggregated unless a later decision explicitly justifies
+weights.
 
 Deterministic contracts remain pass/fail. Qualitative criteria use an anchored
 profile rather than an unexplained overall grade:
@@ -89,12 +98,22 @@ profile rather than an unexplained overall grade:
 - `4` — matches the frozen ideal or an explicitly acceptable alternative;
 - `N/A` — evidence is unavailable or the criterion does not apply.
 
-The profile covers:
+The shared framework covers:
 
-### Behavioral completeness
+### Explicit requirement fulfillment
 
-Required behavior, error handling, compatibility, and regression safety. Omitted
-behavior and unsupported additions remain visible separately.
+Whether the implementation delivers the requested behavior, preserves explicit
+regression contracts, and satisfies compatibility requirements stated or
+discoverable in the supplied materials. Missing explicit behavior receives the
+strongest negative interpretation and cannot be offset by polish elsewhere.
+
+### Engineering robustness
+
+Error handling, boundary behavior, regression risks outside explicit contracts,
+and compatibility holes supported by repository evidence. Robustness is judged
+separately so defensive work cannot compensate for missing requirements.
+Speculative hardening and unsupported backward-compatibility machinery may be
+neutral or negative when they expand scope without an evidence-backed need.
 
 ### Documentation completeness and consistency
 
@@ -126,11 +145,14 @@ questions or steering required. A question is valuable only when it surfaces a
 material ambiguity. No question is required when the frozen materials determine
 an acceptable answer.
 
-### Orchestration fidelity
+### Orchestration telemetry and judgment
 
-Whether the arm was merely capable of delegation or was directed to orchestrate,
-whether subagents were actually used, what responsibilities they received, and
-whether their work improved coverage without conflict or redundant effort.
+Always record whether delegation was available, directed, and actually used,
+including assigned responsibilities, conflicts, duplication, cost, and latency.
+Do not reward orchestration merely for occurring. When a prompt explicitly
+requires it, failure is instruction-adherence evidence. Score orchestration
+judgment separately only in a scenario designed to test whether autonomous
+delegation was appropriate and useful.
 
 ### Resource and economic efficiency
 
@@ -140,6 +162,21 @@ host's metric semantics support it. Report wall time and tool calls alongside a
 standardized API-equivalent cost calculated from a frozen model-pricing snapshot.
 Actual subscription cost remains unavailable; the proxy exists so materially
 more expensive output is visible next to any quality improvement.
+
+## Scenario tiers
+
+Use small calibration scenarios for frequent, inexpensive validation of the
+harness, rubric sensitivity, requirement completion, documentation, tests,
+scope, robustness, and process cost. Treat them as evidence about small changes,
+not as proxies for architecture, prolonged collaboration, or orchestration.
+
+Use representative scenarios such as the Python-to-Rust port less frequently to
+evaluate design ownership, extension locality, sustained interaction, and other
+behaviors that require enough work to become observable. A result applies only
+to the scenario class it exercised.
+
+The first calibration scenario is the
+[date-filter microbenchmark](../evals/harbor/benchmarks/date-filter/README.md).
 
 ## Interpretation
 

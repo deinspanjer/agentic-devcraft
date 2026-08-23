@@ -25,6 +25,16 @@ multi-agent capability; the prompt did not direct delegation and no subject used
 a subagent. This report therefore treats it as `subagents available`, not as an
 orchestration experiment.
 
+## Behavior covered
+
+The initial verifier covered build and focused checks, JSON parity, descendant
+aggregation, model/token/cost aggregation, human-readable output, and visible
+missing-rollout failure. The extension verifier covered initial regression
+safety, retained built-in prices, valid custom prices, and invalid price files.
+
+The canonical descriptions and subject-visible evidence for all eleven checks
+are in [the contract inventory](../benchmarks/vanilla-port/contracts.json).
+
 ## Outcome
 
 All 12 trials completed both stages. The initial ports passed 84/84 discoverable

@@ -118,7 +118,36 @@ One repetition is a plumbing check. Use repeated interleaved trials for
 comparative evidence. Keep deterministic verification separate from optional
 arm-blinded qualitative judgment.
 
-## Vanilla engineering benchmark
+## Engineering benchmarks
+
+### Date-filter calibration
+
+Build and validate the committed tiny Python CLI fixture, then inspect the local
+matrix without using subscription capacity:
+
+```bash
+.venv/bin/python -m evals.harbor.run_engineering_benchmark \
+  --scenario date-filter build-fixture
+.venv/bin/python -m evals.harbor.run_engineering_benchmark \
+  --scenario date-filter validate
+.venv/bin/python -m evals.harbor.run_engineering_benchmark \
+  --scenario date-filter plan
+```
+
+Run one repetition first as plumbing evidence. Authenticated execution still
+requires the explicit gate:
+
+```bash
+CODEX_AUTH_JSON_PATH=/path/to/auth.json \
+  .venv/bin/python -m evals.harbor.run_engineering_benchmark \
+  --scenario date-filter run --execute --repetitions 1
+```
+
+The declared matrix contains three direct arms with three repetitions. It omits
+orchestration because delegation is not justified by this task's size. Review
+the one-repetition evidence before approving the full calibration matrix.
+
+### Vanilla port benchmark
 
 The first benchmark builds a sanitized fixture from the pinned Codex Cost Meter
 source and runs Codex-only, code-only arms.

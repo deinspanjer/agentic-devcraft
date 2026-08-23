@@ -1,4 +1,5 @@
 import asyncio
+import importlib
 import json
 import os
 import re
@@ -81,6 +82,8 @@ class AdaptiveAgent(BaseAgent):
         extension_prompt_path: str | None = None,
         verifier_contracts_path: str | None = None,
         verifier_oracle_path: str | None = None,
+        verifier_reference_path: str | None = None,
+        verifier_module: str = "evals.harbor.port_verifier",
         max_turns: int = 2,
         max_reported_tokens: int | None = None,
         max_repeated_questions: int = 3,
@@ -126,10 +129,16 @@ class AdaptiveAgent(BaseAgent):
         )
         if (self._scenario_policy is None) != (self._extension_prompt is None):
             raise ValueError("scenario policy and extension prompt must be supplied together")
-        if bool(verifier_contracts_path) != bool(verifier_oracle_path):
-            raise ValueError("verifier contracts and oracle must be supplied together")
+        if verifier_oracle_path and verifier_reference_path:
+            raise ValueError("supply one verifier reference path")
+        verifier_reference_path = verifier_reference_path or verifier_oracle_path
+        if bool(verifier_contracts_path) != bool(verifier_reference_path):
+            raise ValueError("verifier contracts and reference must be supplied together")
+        if not re.fullmatch(r"evals\.harbor\.[a-z_]+_verifier", verifier_module):
+            raise ValueError("verifier module must be a local Harbor verifier")
         self._verifier_contracts = Path(verifier_contracts_path) if verifier_contracts_path else None
-        self._verifier_oracle = Path(verifier_oracle_path) if verifier_oracle_path else None
+        self._verifier_oracle = Path(verifier_reference_path) if verifier_reference_path else None
+        self._verifier_module = verifier_module
         self._max_turns = max_turns
         self._max_reported_tokens = max_reported_tokens
         self._max_repeated_questions = max_repeated_questions
@@ -147,6 +156,7 @@ class AdaptiveAgent(BaseAgent):
             "max_repeated_questions": max_repeated_questions,
             "controller_timeout_sec": controller_timeout_sec,
             "conversation_timeout_sec": conversation_timeout_sec,
+            "verifier_module": verifier_module,
             "controller_environment_keys": list(self.CONTROLLER_ENV_KEYS),
         }
 
@@ -400,8 +410,14 @@ class AdaptiveAgent(BaseAgent):
         trajectory = self._trajectory()
         verifier = {"status": "not_configured"}
         if self._verifier_contracts and self._verifier_oracle:
+            if self._verifier_module == "evals.harbor.port_verifier":
+                initial_verifier, extension_verifier = verify_initial, verify_extension
+            else:
+                module = importlib.import_module(self._verifier_module)
+                initial_verifier = module.verify_initial
+                extension_verifier = module.verify_extension
             verifier = await asyncio.to_thread(
-                verify_initial if stage == "initial" else verify_extension,
+                initial_verifier if stage == "initial" else extension_verifier,
                 destination,
                 self._verifier_oracle,
                 self._verifier_contracts,

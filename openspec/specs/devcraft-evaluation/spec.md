@@ -149,7 +149,7 @@ The initial evaluation corpus SHALL include fixtures for review integrity, cold 
 - **THEN** the evaluation determines whether the agent records the changed basis, the replacement decision, and affected downstream conclusions
 
 ### Requirement: Inspectable results and separate measures
-The evaluation system SHALL retain the raw transcript or trajectory, final workspace state, verifier output, termination status, timing, and token usage when the host reports it. It SHALL report correctness, false-positive behavior, workflow adherence, and execution overhead as separate measures and MUST NOT hide them behind a single aggregate score.
+The evaluation system SHALL retain the raw transcript or trajectory, final workspace state, verifier output, termination status, timing, and token usage when the host reports it. It SHALL report explicit requirement fulfillment, engineering robustness, false-positive behavior, workflow adherence, and execution overhead as separate measures and MUST NOT hide them behind a single aggregate score. Robustness MUST NOT compensate for omitted requested behavior.
 
 #### Scenario: Prefer deterministic verification
 - **WHEN** a fixture has mechanically checkable outcomes

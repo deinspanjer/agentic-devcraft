@@ -2,9 +2,24 @@
 
 ## Purpose
 
-Provides reproducible, inspectable evidence about how declared agent configurations perform representative engineering work without ambient workflow or historical-context contamination.
+Provides reproducible, inspectable evidence about how declared agent configurations perform calibration and representative engineering work without ambient workflow or historical-context contamination.
 
 ## Requirements
+
+### Requirement: Tiered engineering scenarios
+The benchmark SHALL distinguish inexpensive calibration scenarios from representative engineering scenarios. Calibration results MUST be interpreted only for the small-change behaviors they exercise and MUST NOT be generalized to architecture, sustained collaboration, or orchestration.
+
+#### Scenario: Run the date-filter calibration
+- **WHEN** a developer selects the date-filter scenario
+- **THEN** the harness prepares the committed tiny Python CLI fixture and runs the inclusive lower-date task followed by the inclusive upper-date extension in the same subject session
+
+#### Scenario: Exclude unjustified orchestration
+- **WHEN** a scenario is too small to benefit plausibly from delegated implementation
+- **THEN** its declared comparison omits a directed-orchestration arm while still retaining orchestration capability and activity as telemetry
+
+#### Scenario: Interpret a calibration result
+- **WHEN** the date-filter matrix completes
+- **THEN** its evidence applies to requirement fulfillment, documentation, test quality, scope, robustness, and process cost for small changes rather than broader engineering quality
 
 ### Requirement: Code-only port scenario
 The benchmark SHALL provide a fixture containing the existing Python Codex cost-meter implementation, behaviorally relevant embedded or self-tests, a minimal task-oriented README, and synthetic Codex state sufficient to exercise report behavior. It MUST exclude prior conversations, prior Rust design or implementation, ADRs, architecture-heavy repository instructions, and workflow, toolkit, plugin, hook, or skill influence.
@@ -116,7 +131,19 @@ The verifier SHALL be calibrated against known passing alternatives and delibera
 - **THEN** the system produces a new verifier record linked to the immutable original trial without changing its transcript or workspace evidence
 
 ### Requirement: Separate product, engineering, and process evidence
-Results SHALL keep initial-port and extension evidence separate and SHALL expose behavioral correctness, omitted behavior, source inspection, scope control, module ownership, duplication, extension locality, focused runnable checks, questions, assumptions, steering, duration, tool calls, reported token use, and process artifacts without a composite score or ordinal ranking.
+Results SHALL keep initial and extension evidence separate and SHALL expose explicit requirement fulfillment, engineering robustness, omitted behavior, source inspection, documentation consistency, scope control, module ownership, duplication, extension locality, focused runnable checks, questions, assumptions, steering, duration, tool calls, reported token use, and process artifacts without a composite score or ordinal ranking. Robustness or defensive polish MUST NOT compensate for missing explicit requirements.
+
+#### Scenario: Separate requirements from robustness
+- **WHEN** an implementation passes every explicit behavioral contract but leaves a plausible edge condition unsupported
+- **THEN** the required-behavior result remains complete and the robustness gap is reported independently
+
+#### Scenario: Prevent defensive compensation
+- **WHEN** an implementation adds extensive compatibility or error-handling machinery but omits requested behavior
+- **THEN** the explicit requirement result remains incomplete regardless of its robustness assessment
+
+#### Scenario: Apply a scenario rubric
+- **WHEN** qualitative evidence is judged
+- **THEN** the scenario supplies its ideal, acceptable alternatives, evidence sources, anchored criteria, missing-evidence policy, and any score ceiling before execution
 
 #### Scenario: Inspect discovery behavior
 - **WHEN** a trial completes or stops
@@ -129,6 +156,10 @@ Results SHALL keep initial-port and extension evidence separate and SHALL expose
 #### Scenario: Report unavailable measures
 - **WHEN** a host does not report a requested resource measure
 - **THEN** that measure is explicitly unavailable rather than inferred or replaced with zero
+
+#### Scenario: Record orchestration without rewarding activity
+- **WHEN** delegation is available, directed, or used
+- **THEN** the result records those states and their coverage, conflict, duplication, latency, and cost consequences without rewarding subagent count or activity by itself
 
 #### Scenario: Summarize repeated arms
 - **WHEN** a comparison contains multiple repetitions

@@ -1,24 +1,26 @@
 # Future Work
 
-## Evaluation rubric v2
+## Rubric calibration
 
-- Define frozen, scenario-specific ideals and acceptable variants before trials.
-- Add anchored qualitative judgments for completeness, documentation
-  consistency, scope, ownership/locality, behavioral test quality, discovery,
-  interaction, and actual orchestration.
+- Calibrate the date-filter scenario's anchored qualitative criteria against
+  compliant alternatives and targeted defects before using judge output for
+  comparisons.
+- Keep explicit requirement fulfillment separate from engineering robustness so
+  defensive polish cannot offset omitted requested behavior.
 - Record uncached input, cache reads and writes when available, output,
   controller, and subagent tokens separately.
 - Add a frozen pricing snapshot for standardized API-equivalent cost while
   keeping actual subscription cost explicitly unavailable.
-- Calibrate every criterion against compliant alternatives and targeted defects
-  before using it for comparisons.
+- Add arm-blinded judge records that cite retained evidence for each score.
 
 The detailed target rubric is in [docs/EVALUATION.md](docs/EVALUATION.md).
 
 ## Baselines
 
-- Replace the misleading “subagents allowed” arm with a directed-orchestrator
-  arm whose prompt requires delegation and whose verifier confirms subagent use.
+- Run one date-filter repetition per arm as a plumbing check, then review the
+  declared three-repetition schedule before authenticated calibration trials.
+- Add a directed-orchestrator arm only to a representative scenario where
+  delegation is justified; verify actual use and evaluate its consequences.
 - Add a scenario with enough behavioral and design ambiguity to avoid the
   correctness ceiling encountered by the first port baseline.
 - Preserve the original baseline as historical plumbing evidence rather than
