@@ -231,6 +231,7 @@ class AdaptiveScenarioTest(unittest.IsolatedAsyncioTestCase):
                 )
 
             self.assertEqual(result["session_id"], "same-native-session")
+            self.assertEqual(result["interaction_turns"], 2)
             self.assertTrue(environment.assert_target_exists)
             self.assertEqual(subject.messages, ["Port the report.", "Add price-file support."])
             self.assertTrue((logs / "snapshots/initial/initial.txt").is_file())

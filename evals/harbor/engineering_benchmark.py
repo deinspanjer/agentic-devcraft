@@ -459,7 +459,11 @@ def validate_matrix(value: Any) -> dict[str, Any]:
         if isinstance(arm["repetitions"], bool) or not isinstance(arm["repetitions"], int) or arm["repetitions"] < 1:
             raise ValueError(f"arms[{index}].repetitions must be positive")
         limits = arm["limits"]
-        if not isinstance(limits, dict) or set(limits) != {"turns", "timeout_sec", "reported_output_tokens"}:
+        if not isinstance(limits, dict) or set(limits) != {
+            "interaction_turns",
+            "timeout_sec",
+            "reported_output_tokens",
+        }:
             raise ValueError(f"arms[{index}].limits are invalid")
         if not all(isinstance(item, int) and not isinstance(item, bool) and item > 0 for item in limits.values()):
             raise ValueError(f"arms[{index}].limits must be positive integers")

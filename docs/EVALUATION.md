@@ -150,6 +150,22 @@ questions or steering required. A question is valuable only when it surfaces a
 material ambiguity. No question is required when the frozen materials determine
 an acceptable answer.
 
+Use these process terms consistently:
+
+- **Interaction turn:** one user or controller input through the agent's
+  completed final response. Commentary and tool activity inside that response
+  remain part of the same interaction turn.
+- **Assistant update:** a visible intermediate commentary or progress message
+  before the completed response. Empty tool-associated trajectory entries do
+  not count.
+- **Tool call:** one recorded invocation of an available tool.
+- **Controller continuation:** an additional testing-agent message after the
+  stage's initial prompt, including an allowed answer, progress request, or
+  steering message. The resulting response is another interaction turn.
+
+Report these separately. Do not use an unqualified `turns` field for trajectory
+entries, assistant updates, task stages, or tool loops.
+
 ### Orchestration telemetry and judgment
 
 Always record whether delegation was available, directed, and actually used,

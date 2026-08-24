@@ -19,7 +19,7 @@
       "prompt": "initial-prompt",
       "verifier": "vanilla-port-v1",
       "repetitions": 1,
-      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+      "limits": {"interaction_turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
     },
     {
       "id": "sol-low-direct",
@@ -32,7 +32,7 @@
       "prompt": "initial-prompt",
       "verifier": "vanilla-port-v1",
       "repetitions": 1,
-      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+      "limits": {"interaction_turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
     },
     {
       "id": "sol-high-orchestrated",
@@ -45,7 +45,7 @@
       "prompt": "initial-prompt",
       "verifier": "vanilla-port-v1",
       "repetitions": 1,
-      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+      "limits": {"interaction_turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
     },
     {
       "id": "terra-high-direct",
@@ -58,7 +58,7 @@
       "prompt": "initial-prompt",
       "verifier": "vanilla-port-v1",
       "repetitions": 1,
-      "limits": {"turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
+      "limits": {"interaction_turns": 20, "timeout_sec": 5400, "reported_output_tokens": 250000}
     }
   ]
 }

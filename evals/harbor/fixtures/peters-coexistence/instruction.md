@@ -3,14 +3,14 @@ installed workflow skills that apply, verify load-bearing source facts, and
 avoid repeating equivalent phases.
 
 Also create `evaluation-record.json` containing the phase names used, invoked
-skill names, number of conversational turns, and whether the final plan
+skill names, number of interaction turns, and whether the final plan
 correctly preserves `save`'s no-return-value contract:
 
 ```json
 {
   "phases": ["design", "review", "plan"],
   "invocations": ["skill-name"],
-  "turns": 1,
+  "interaction_turns": 1,
   "outcome": {"preserves-save-contract": true}
 }
 ```

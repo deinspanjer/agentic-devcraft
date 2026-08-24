@@ -157,7 +157,7 @@ class EngineeringBenchmarkTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "code-only"):
             validate_matrix(history)
         unpaired = copy.deepcopy(self.matrix)
-        unpaired["arms"][0]["limits"]["turns"] += 1
+        unpaired["arms"][0]["limits"]["interaction_turns"] += 1
         with self.assertRaisesRegex(ValueError, "undeclared factor"):
             validate_matrix(unpaired)
         unsupported = copy.deepcopy(self.matrix)

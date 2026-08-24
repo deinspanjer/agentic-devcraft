@@ -93,11 +93,12 @@ def trajectory_evidence(
 ) -> dict[str, Any]:
     steps = trajectory.get("steps") if isinstance(trajectory, dict) else []
     steps = steps if isinstance(steps, list) else []
-    agent_messages = [
-        step.get("message", "")
+    agent_steps = [
+        step
         for step in steps
         if isinstance(step, dict) and step.get("source") in {"agent", "assistant"}
     ]
+    agent_messages = [step.get("message", "") for step in agent_steps]
     tool_calls = [
         call
         for step in steps
@@ -129,7 +130,10 @@ def trajectory_evidence(
         ],
         "commits": [line for line in commands if re.search(r"\bgit\s+commit\b", line)],
         "cleanup_commands": [line for line in commands if re.search(r"\b(?:rm|rmdir|git\s+clean)\b", line)],
-        "turns": len(agent_messages),
+        "assistant_updates": sum(
+            bool(str(step.get("message", "")).strip()) and bool(step.get("tool_calls"))
+            for step in agent_steps
+        ),
         "tool_calls": len(tool_calls),
         "duration_sec": {"available": duration_sec is not None, "value": duration_sec},
         "reported_tokens": {
@@ -214,6 +218,7 @@ def build_engineering_result(
     for stage, checkpoint in by_stage.items():
         verifier = checkpoint.get("verifier") or {"status": "not_run", "contracts": []}
         contracts = verifier.get("contracts") or []
+        controller = checkpoint.get("controller") or {}
         stages[stage] = {
             "product": {
                 "status": verifier.get("status"),
@@ -237,8 +242,16 @@ def build_engineering_result(
                     duration_sec=(host_metrics or {}).get(stage, {}).get("duration_sec"),
                     reported_tokens=(host_metrics or {}).get(stage, {}).get("reported_tokens"),
                 ),
-                "termination": checkpoint.get("controller", {}).get("termination"),
-                "steering": checkpoint.get("controller", {}).get("decisions", []),
+                "interaction_turns": controller.get(
+                    "interaction_turns", controller.get("turns")
+                ),
+                "controller_continuations": sum(
+                    item.get("action") == "message"
+                    for item in controller.get("decisions", [])
+                    if isinstance(item, dict)
+                ),
+                "termination": controller.get("termination"),
+                "steering": controller.get("decisions", []),
                 "process_artifacts": [
                     item["path"]
                     for item in checkpoint.get("inventory", [])
@@ -268,7 +281,9 @@ def blinded_qualitative_input(result: dict[str, Any]) -> dict[str, Any]:
                         "assumptions",
                         "focused_checks",
                         "process_artifacts",
-                        "turns",
+                        "interaction_turns",
+                        "assistant_updates",
+                        "controller_continuations",
                         "tool_calls",
                         "duration_sec",
                         "reported_tokens",

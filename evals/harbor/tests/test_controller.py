@@ -22,7 +22,10 @@ class ControllerTest(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result["termination"], "stopped")
-        self.assertEqual(set(seen[0]), {"policy", "transcript", "turn", "max_turns"})
+        self.assertEqual(
+            set(seen[0]),
+            {"policy", "transcript", "interaction_turn", "max_interaction_turns"},
+        )
         self.assertNotIn("arm", repr(seen[0]).lower())
         self.assertNotIn("expected", repr(seen[0]).lower())
 
@@ -43,12 +46,12 @@ class ControllerTest(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result["termination"], "turn_limit")
-        self.assertEqual(result["turns"], 2)
+        self.assertEqual(result["interaction_turns"], 2)
 
     async def test_stage_local_turn_count_keeps_prior_transcript_as_context(self):
         async def decide(request):
             self.assertEqual(len(request["transcript"]), 4)
-            self.assertEqual(request["turn"], 1)
+            self.assertEqual(request["interaction_turn"], 1)
             return {"action": "stop", "reason": "done"}
 
         result = await drive_conversation(

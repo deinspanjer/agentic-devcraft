@@ -12,7 +12,9 @@ OVERLAPS = {
 def verify_coexistence(records: dict[str, dict[str, Any]]) -> dict[str, Any]:
     if set(records) != {"peters-only", "devcraft-only", "combined"}:
         raise ValueError("records require peters-only, devcraft-only, and combined arms")
-    min_turns = min(record["turns"] for record in records.values())
+    min_interaction_turns = min(
+        record["interaction_turns"] for record in records.values()
+    )
     arms: dict[str, Any] = {}
     for name, record in records.items():
         phase_counts = Counter(record.get("phases", []))
@@ -24,7 +26,8 @@ def verify_coexistence(records: dict[str, dict[str, Any]]) -> dict[str, Any]:
         arms[name] = {
             "duplicate_phases": duplicates,
             "conflicting_invocations": conflicts,
-            "extra_turns": record["turns"] - min_turns,
+            "extra_interaction_turns": record["interaction_turns"]
+            - min_interaction_turns,
             "outcome": record.get("outcome"),
         }
     outcomes = {name: value["outcome"] for name, value in arms.items()}

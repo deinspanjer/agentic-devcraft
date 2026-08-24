@@ -21,8 +21,8 @@ def build_request(
     request = {
         "policy": policy,
         "transcript": [dict(item) for item in transcript],
-        "turn": turn,
-        "max_turns": max_turns,
+        "interaction_turn": turn,
+        "max_interaction_turns": max_turns,
     }
     if isinstance(policy, dict):
         request.update(stage=stage, observation=observation or {})
@@ -133,9 +133,11 @@ async def drive_conversation(
         raise ValueError("max_turns and timeout_sec must be positive")
 
     started = time.monotonic()
-    turns = sum(item["role"] == "agent" for item in transcript[transcript_start:])
+    interaction_turns = sum(
+        item["role"] == "agent" for item in transcript[transcript_start:]
+    )
     result: dict[str, Any] = {
-        "turns": turns,
+        "interaction_turns": interaction_turns,
         "termination": None,
         "reason": None,
         "tester_requests": [],
@@ -144,7 +146,7 @@ async def drive_conversation(
     }
     question_counts: dict[str, int] = {}
 
-    while turns < max_turns:
+    while interaction_turns < max_turns:
         observation = await observe() if observe is not None else None
         if observation is not None:
             result["observations"].append(observation)
@@ -172,7 +174,7 @@ async def drive_conversation(
         request = build_request(
             available,
             transcript,
-            turns,
+            interaction_turns,
             max_turns,
             stage=stage,
             observation=observation,
@@ -246,8 +248,8 @@ async def drive_conversation(
             return result
 
         transcript.append({"role": "agent", "content": response})
-        turns += 1
-        result["turns"] = turns
+        interaction_turns += 1
+        result["interaction_turns"] = interaction_turns
         if question := _question_key(response):
             question_counts[question] = question_counts.get(question, 0) + 1
             if question_counts[question] >= max_repeated_questions:
@@ -257,5 +259,7 @@ async def drive_conversation(
                 )
                 return result
 
-    result.update(termination="turn_limit", reason="maximum turns reached")
+    result.update(
+        termination="turn_limit", reason="maximum interaction turns reached"
+    )
     return result

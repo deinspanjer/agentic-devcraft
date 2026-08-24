@@ -134,7 +134,9 @@ class EngineeringRunnerTest(unittest.TestCase):
         self.assertEqual(len(value["schedule"]), 4)
         self.assertEqual(value["authenticated_monetary_cost"], "unavailable-subscription-usage")
         self.assertEqual(value["subject_reported_output_token_ceiling"], 1_000_000)
-        self.assertIn("per stage", value["limit_semantics"]["turns"])
+        self.assertIn(
+            "per stage", value["limit_semantics"]["interaction_turns"]
+        )
         self.assertIn("not reported", value["limit_semantics"]["controller"])
         self.assertIn("plumbing", value["note"])
 

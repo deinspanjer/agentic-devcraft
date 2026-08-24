@@ -10,13 +10,13 @@ class CoexistenceVerifierTest(unittest.TestCase):
                 "peters-only": {
                     "phases": ["design", "review", "plan"],
                     "invocations": ["peters-toolkit:critical-design-review"],
-                    "turns": 3,
+                    "interaction_turns": 3,
                     "outcome": {"preserves-save-contract": True},
                 },
                 "devcraft-only": {
                     "phases": ["design", "review", "plan"],
                     "invocations": ["review-integrity"],
-                    "turns": 3,
+                    "interaction_turns": 3,
                     "outcome": {"preserves-save-contract": True},
                 },
                 "combined": {
@@ -25,14 +25,16 @@ class CoexistenceVerifierTest(unittest.TestCase):
                         "peters-toolkit:critical-design-review",
                         "review-integrity",
                     ],
-                    "turns": 5,
+                    "interaction_turns": 5,
                     "outcome": {"preserves-save-contract": False},
                 },
             }
         )
         self.assertEqual(result["arms"]["combined"]["duplicate_phases"], ["review"])
         self.assertEqual(result["arms"]["combined"]["conflicting_invocations"], ["review"])
-        self.assertEqual(result["arms"]["combined"]["extra_turns"], 2)
+        self.assertEqual(
+            result["arms"]["combined"]["extra_interaction_turns"], 2
+        )
         self.assertTrue(result["outcome_differences"])
 
 

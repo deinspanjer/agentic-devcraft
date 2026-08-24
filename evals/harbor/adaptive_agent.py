@@ -520,7 +520,7 @@ class AdaptiveAgent(BaseAgent):
                 extension = await run_stage("extension", extension_start)
             except TimeoutError:
                 extension = {
-                    "turns": 0,
+                    "interaction_turns": 0,
                     "termination": "time_limit",
                     "reason": "extension agent timeout",
                     "tester_requests": [],
@@ -539,7 +539,9 @@ class AdaptiveAgent(BaseAgent):
             )
         return {
             "session_id": self._subject.session_id,
-            "turns": max(stage["turns"] for stage in stages.values()),
+            "interaction_turns": sum(
+                stage["interaction_turns"] for stage in stages.values()
+            ),
             "termination": list(stages.values())[-1]["termination"],
             "reason": list(stages.values())[-1]["reason"],
             "stages": stages,
@@ -582,7 +584,7 @@ class AdaptiveAgent(BaseAgent):
             )
         except TimeoutError:
             result = {
-                "turns": 0,
+                "interaction_turns": 0,
                 "termination": "timeout",
                 "reason": "initial agent timeout",
                 "tester_requests": [],
@@ -590,7 +592,7 @@ class AdaptiveAgent(BaseAgent):
             }
         except Exception as exc:
             result = {
-                "turns": 0,
+                "interaction_turns": 0,
                 "termination": "controller_error",
                 "reason": type(exc).__name__,
                 "tester_requests": [],

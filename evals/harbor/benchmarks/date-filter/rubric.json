@@ -89,7 +89,7 @@
     },
     {
       "id": "resource-efficiency",
-      "ideal": "The complete, robust result uses proportionate turns, tools, tokens, time, and files.",
+      "ideal": "The complete, robust result uses proportionate interaction turns, assistant updates, controller continuations, tools, tokens, time, and files.",
       "acceptable": "Higher resource use is acceptable only when accompanied by visible improvement in another criterion.",
       "evidence": ["host metrics", "trajectory", "changed paths", "frozen price snapshot when available"],
       "anchors": {

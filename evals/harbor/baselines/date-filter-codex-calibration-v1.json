@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "baseline_id": "date-filter-codex-calibration-v1",
+  "evidence": "plumbing-only",
+  "interpretation": "single-repetition calibration run; no model ranking",
+  "fixture_digest": "ed30bb8814a21a7b662744e6b86c8dc511d251e57a65ae6bbc6a5a2fc0dc02a8",
+  "prompt_digests": {
+    "initial": "d48c2682ea55817687d37906464a341fc07604ac1cd631b30e540093714bce1e",
+    "extension": "4a376a9d0fd86c5656f255b30ece1ff0238487fab2b2a8b3513572a153652e79"
+  },
+  "correction": {
+    "date": "2026-08-23",
+    "previous_label": "turns",
+    "previous_measure": "assistant trajectory entries, including intermediate and tool-associated entries",
+    "replacement_metrics": ["interaction_turns", "assistant_updates", "controller_continuations"],
+    "evidence": "retained controller records and stage-local trajectories"
+  },
+  "trials": [
+    {
+      "order": 1,
+      "arm": "sol-high-direct",
+      "model": "gpt-5.6-sol",
+      "reasoning": "high",
+      "initial": {"contracts": "4/4", "input_tokens": 110109, "cached_input_tokens": 92160, "output_tokens": 2862, "interaction_turns": 1, "assistant_updates": 3, "controller_continuations": 0, "tool_calls": 7, "changed_files": 3},
+      "extension": {"contracts": "4/4", "input_tokens": 74226, "cached_input_tokens": 67584, "output_tokens": 1556, "interaction_turns": 1, "assistant_updates": 1, "controller_continuations": 0, "tool_calls": 3, "changed_files": 3}
+    },
+    {
+      "order": 2,
+      "arm": "sol-low-direct",
+      "model": "gpt-5.6-sol",
+      "reasoning": "low",
+      "initial": {"contracts": "4/4", "input_tokens": 93786, "cached_input_tokens": 62976, "output_tokens": 2540, "interaction_turns": 1, "assistant_updates": 3, "controller_continuations": 0, "tool_calls": 6, "changed_files": 3},
+      "extension": {"contracts": "4/4", "input_tokens": 68390, "cached_input_tokens": 56320, "output_tokens": 1499, "interaction_turns": 1, "assistant_updates": 1, "controller_continuations": 0, "tool_calls": 3, "changed_files": 3}
+    },
+    {
+      "order": 3,
+      "arm": "terra-high-direct",
+      "model": "gpt-5.6-terra",
+      "reasoning": "high",
+      "initial": {"contracts": "4/4", "input_tokens": 96815, "cached_input_tokens": 81152, "output_tokens": 2950, "interaction_turns": 1, "assistant_updates": 3, "controller_continuations": 0, "tool_calls": 6, "changed_files": 3},
+      "extension": {"contracts": "4/4", "input_tokens": 71645, "cached_input_tokens": 65536, "output_tokens": 1812, "interaction_turns": 1, "assistant_updates": 1, "controller_continuations": 0, "tool_calls": 3, "changed_files": 3}
+    }
+  ],
+  "shared_observations": {
+    "invalid_since": "rejected",
+    "invalid_until": "rejected",
+    "inverted_range": "accepted as an empty result; unscored robustness probe",
+    "questions": 0,
+    "assumptions": 0,
+    "process_artifacts": 0
+  }
+}

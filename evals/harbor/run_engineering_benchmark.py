@@ -167,7 +167,7 @@ def trial_command(
         "--agent-kwarg",
         f"verifier_module={scenario_config['verifier_module']}",
         "--agent-kwarg",
-        f"max_turns={limits['turns']}",
+        f"max_turns={limits['interaction_turns']}",
         "--agent-kwarg",
         f"max_reported_tokens={limits['reported_output_tokens']}",
         "--agent-kwarg",
@@ -383,10 +383,10 @@ def plan(matrix: dict[str, Any]) -> dict[str, Any]:
             for arm in matrix["arms"]
         ),
         "limit_semantics": {
-            "turns": "per stage; bounded independently for each stage",
+            "interaction_turns": "per stage; each user or controller input through its completed agent response",
             "timeout_sec": "one wall-clock limit shared by both stages",
             "reported_output_tokens": "cumulative subject-output limit per trial",
-            "controller": "bounded by the configured stage turns; controller tokens are not reported by the harness",
+            "controller": "bounded by the configured stage interaction turns; controller tokens are not reported by the harness",
         },
         "note": "One repetition is plumbing evidence only; no authenticated trials run during planning.",
     }

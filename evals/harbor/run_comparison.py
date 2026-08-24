@@ -214,7 +214,7 @@ def run_arm(
     result.update(
         arm=arm["id"],
         duration_sec=_duration(harbor_result),
-        turns=len(trajectories),
+        interaction_turns=len(trajectories),
         tool_calls=sum(len(step.get("tool_calls") or []) for step in trajectory.get("steps", [])),
         input_tokens=total("n_input_tokens"),
         cache_tokens=total("n_cache_tokens"),

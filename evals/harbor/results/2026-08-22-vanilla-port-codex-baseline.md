@@ -49,8 +49,8 @@ the behavioral-correctness ceiling, so the run does not identify a correctness
 winner. Within that ceiling, Sol at low reasoning with direct execution was the
 most suitable configuration for this task as designed: it had the lowest median
 reported input, cached-input, and output token counts in both stages, and its
-extension had the fewest turns and tool calls while changing two files with one
-pricing owner.
+extension had the fewest tool calls while changing two files with one pricing
+owner. It also tied Terra high for the fewest assistant updates.
 
 That is provisional resource-efficiency evidence for small, well-specified work,
 not evidence that Sol or low reasoning is generally superior. The qualitative
@@ -61,21 +61,21 @@ at high reasoning, so model and reasoning effects cannot be separated.
 
 ### Initial port
 
-| Arm | Contracts | Input | Cached input | Output | Turns | Tools |
-|---|---:|---:|---:|---:|---:|---:|
-| Sol high, direct | 7/7 | 872,116 | 787,456 | 24,672 | 21 | 20 |
-| Sol low, direct | 7/7 | 844,954 | 781,056 | 14,744 | 23 | 22 |
-| Sol high, subagents available | 7/7 | 1,047,101 | 931,328 | 23,191 | 22 | 21 |
-| Terra high, direct | 7/7 | 1,079,271 | 989,952 | 17,414 | 25 | 24 |
+| Arm | Contracts | Input | Cached input | Output | Interaction turns | Assistant updates | Controller continuations | Tool calls |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Sol high, direct | 7/7 | 872,116 | 787,456 | 24,672 | 1 | 4 | 0 | 20 |
+| Sol low, direct | 7/7 | 844,954 | 781,056 | 14,744 | 1 | 3 | 0 | 22 |
+| Sol high, subagents available | 7/7 | 1,047,101 | 931,328 | 23,191 | 1 | 5 | 0 | 21 |
+| Terra high, direct | 7/7 | 1,079,271 | 989,952 | 17,414 | 1 | 4 | 0 | 24 |
 
 ### Pricing-file extension
 
-| Arm | Contracts | Input | Cached input | Output | Turns | Tools | Files | Pricing owners |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|
-| Sol high, direct | 4/4 | 1,062,542 | 1,035,008 | 10,386 | 14 | 13 | 4 | 2 |
-| Sol low, direct | 4/4 | 563,343 | 546,560 | 5,605 | 11 | 10 | 2 | 1 |
-| Sol high, subagents available | 4/4 | 984,472 | 956,928 | 10,535 | 14 | 13 | 4 | 2 |
-| Terra high, direct | 4/4 | 1,315,003 | 1,279,488 | 10,145 | 18 | 17 | 3 | 1 |
+| Arm | Contracts | Input | Cached input | Output | Interaction turns | Assistant updates | Controller continuations | Tool calls | Files | Pricing owners |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| Sol high, direct | 4/4 | 1,062,542 | 1,035,008 | 10,386 | 1 | 3 | 0 | 13 | 4 | 2 |
+| Sol low, direct | 4/4 | 563,343 | 546,560 | 5,605 | 1 | 2 | 0 | 10 | 2 | 1 |
+| Sol high, subagents available | 4/4 | 984,472 | 956,928 | 10,535 | 1 | 3 | 0 | 13 | 4 | 2 |
+| Terra high, direct | 4/4 | 1,315,003 | 1,279,488 | 10,145 | 1 | 2 | 0 | 17 | 3 | 1 |
 
 These measures describe the runs; they do not grade documentation completeness,
 test quality, architectural ownership, or overall value. In particular, fewer
@@ -107,9 +107,15 @@ cost proxy were unavailable. They are not treated as zero.
 
 The executed normalizer's extension trajectory included the initial prefix even
 though its token metrics were stage-local. The published machine baseline removes
-that exact prefix for turns, tool calls, inspection, questions, and assumptions.
-Future normalization performs the same removal and fails closed when the two
-trajectories are not an exact continuation.
+that exact prefix for assistant updates, tool calls, inspection, questions, and
+assumptions. Future normalization performs the same removal and fails closed when
+the two trajectories are not an exact continuation.
+
+Correction, 2026-08-23: the original report labeled every assistant trajectory
+entry as a “turn,” including intermediate updates and empty tool-associated
+entries. Retained controller records establish one interaction turn per stage
+and no controller continuations in every trial. The tables and machine baseline
+now use those counts and report visible assistant updates separately.
 
 ## Durable evidence
 

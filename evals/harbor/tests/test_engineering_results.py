@@ -17,6 +17,7 @@ class EngineeringResultTest(unittest.TestCase):
     def test_committed_baseline_preserves_trials_without_overclaiming(self):
         path = Path(__file__).parents[1] / "baselines/vanilla-port-codex-v1.json"
         baseline = json.loads(path.read_text())
+        self.assertEqual(baseline["schema_version"], 2)
         trials = baseline["trials"]
         self.assertEqual([trial["order"] for trial in trials], list(range(1, 13)))
         self.assertTrue(
@@ -37,7 +38,33 @@ class EngineeringResultTest(unittest.TestCase):
         )
         self.assertNotIn("ranking", baseline)
         self.assertNotIn("composite", baseline)
+        self.assertTrue(
+            all(
+                stage["interaction_turns"] == 1
+                and stage["controller_continuations"] == 0
+                and "turns" not in stage
+                for trial in trials
+                for stage in (trial["initial"], trial["extension"])
+            )
+        )
 
+    def test_committed_calibration_uses_corrected_process_terms(self):
+        path = (
+            Path(__file__).parents[1]
+            / "baselines/date-filter-codex-calibration-v1.json"
+        )
+        baseline = json.loads(path.read_text())
+        self.assertEqual(baseline["evidence"], "plumbing-only")
+        self.assertEqual(len(baseline["trials"]), 3)
+        self.assertTrue(
+            all(
+                stage["interaction_turns"] == 1
+                and stage["controller_continuations"] == 0
+                and "turns" not in stage
+                for trial in baseline["trials"]
+                for stage in (trial["initial"], trial["extension"])
+            )
+        )
     def test_stage_evidence_locality_blinding_and_summary(self):
         with tempfile.TemporaryDirectory() as raw:
             root = Path(raw)
@@ -68,7 +95,11 @@ class EngineeringResultTest(unittest.TestCase):
                     "workspace_digest": stage,
                     "inventory": [{"path": "src/report.rs"}],
                     "git": {"changed_paths": ["src/report.rs"]},
-                    "controller": {"termination": "completed", "decisions": []},
+                    "controller": {
+                        "interaction_turns": 1,
+                        "termination": "completed",
+                        "decisions": [],
+                    },
                     "verifier": {
                         "status": "passed",
                         "contracts": [{"id": "contract", "passed": True}],
@@ -85,7 +116,13 @@ class EngineeringResultTest(unittest.TestCase):
                         "source": "agent",
                         "message": "Assuming local scope. Is JSON required?",
                         "tool_calls": [{"command": "sed -n 1,20p rollout_stats.py\ncargo test"}],
-                    }
+                    },
+                    {
+                        "source": "agent",
+                        "message": "",
+                        "tool_calls": [{"command": "cargo check"}],
+                    },
+                    {"source": "agent", "message": "Done.", "tool_calls": []},
                 ]
             }
             result = build_engineering_result(
@@ -110,6 +147,10 @@ class EngineeringResultTest(unittest.TestCase):
             )
             process = result["stages"]["initial"]["process"]
             self.assertTrue(process["source_inspection"])
+            self.assertEqual(process["interaction_turns"], 1)
+            self.assertEqual(process["assistant_updates"], 1)
+            self.assertEqual(process["controller_continuations"], 0)
+            self.assertNotIn("turns", process)
             self.assertEqual(
                 result["stages"]["initial"]["product"]["robustness"][0]["id"],
                 "edge",
@@ -167,6 +208,8 @@ class EngineeringResultTest(unittest.TestCase):
         self.assertTrue(evidence["source_inspection"])
         self.assertTrue(evidence["self_test_inspection"])
         self.assertTrue(evidence["focused_checks"])
+        self.assertEqual(evidence["assistant_updates"], 1)
+        self.assertNotIn("turns", evidence)
 
     def test_offline_rescore_is_append_only(self):
         from evals.harbor.tests.test_port_verifier import CONTRACTS, ORACLE
