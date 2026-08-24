@@ -33,6 +33,7 @@ supports them.
 | Can the selected projects be installed, discovered, and used on both hosts? | [Subject smoke matrix](2026-08-21-subject-smoke-matrix.md) | [Subject declarations](../subjects/) |
 | What happened in the 12-trial vanilla baseline? | [Baseline report](2026-08-22-vanilla-port-codex-baseline.md) | [Machine baseline](../baselines/vanilla-port-codex-v1.json) |
 | What happened in the date-filter calibration? | [Calibration report](2026-08-23-date-filter-codex-calibration.md) | [Machine calibration record](../baselines/date-filter-codex-calibration-v1.json) |
+| Which Codex Cost Meter report changes are strong future experiments? | [Report experiment candidates](2026-08-24-codex-cost-meter-report-experiment-candidates.md) | Primary commit, OpenSpec, and Codex-session evidence cited in the inventory |
 | What exactly was supplied and verified? | [Benchmark fixture](../benchmarks/vanilla-port/README.md) | [Pinned public source](https://github.com/deinspanjer/codex-cost-meter/tree/0b5eb56978c91e1fa1631d9ec84ac3767e8fce79), [manifest](../benchmarks/vanilla-port/manifest.json), and [behavior contracts](../benchmarks/vanilla-port/contracts.json) |
 | How should the results be interpreted? | [Evaluation methodology](../../../docs/EVALUATION.md) | [Executed matrix](2026-08-22-vanilla-port-proposed-matrix.md) |
 

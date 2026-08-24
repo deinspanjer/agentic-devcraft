@@ -21,8 +21,9 @@ The detailed target rubric is in [docs/EVALUATION.md](docs/EVALUATION.md).
   declared three-repetition schedule before authenticated calibration trials.
 - Add a directed-orchestrator arm only to a representative scenario where
   delegation is justified; verify actual use and evaluate its consequences.
-- Add a scenario with enough behavioral and design ambiguity to avoid the
-  correctness ceiling encountered by the first port baseline.
+- Build the next representative scenario from the
+  [Codex Cost Meter report candidates](evals/harbor/results/2026-08-24-codex-cost-meter-report-experiment-candidates.md),
+  starting with legacy fork replay, Fast-tier pricing, or corpus date reports.
 - Preserve the original baseline as historical plumbing evidence rather than
   rerunning it under changed factor semantics.
 
