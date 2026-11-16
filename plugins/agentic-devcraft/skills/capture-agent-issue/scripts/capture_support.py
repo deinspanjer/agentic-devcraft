@@ -207,6 +207,129 @@ def metrics(args):
             'latest_reported_usage': latest_usage, 'cumulative_usage': cumulative}
 
 
+def iso_ms(value):
+    return datetime.fromtimestamp(value / 1000, timezone.utc).isoformat().replace('+00:00', 'Z')
+
+
+def opencode_metrics(args):
+    """Measure a native OpenCode session export up to a message boundary.
+
+    Projected messages are mutable: a tool pending at the cutoff can later complete
+    inside the same message. Anything recorded after --cutoff-ms is therefore excluded
+    even when its message is inside the boundary.
+    """
+    document = json.loads(Path(args.transcript).read_bytes())
+    data = document.get('data') if isinstance(document, dict) else None
+    info = (data or {}).get('info') if isinstance(data, dict) else None
+    messages = (data or {}).get('messages') if isinstance(data, dict) else None
+    if not isinstance(info, dict) or not isinstance(messages, list):
+        raise ValueError('OpenCode source must be a session export with info and messages')
+    if info.get('id') != args.subject_id:
+        raise ValueError('Source session metadata does not match subject ID')
+    boundary = args.before_message_id or args.through_message_id
+    ids = [m.get('id') for m in messages]
+    limit = args.cutoff_ms
+    # An export omits a message that is still in progress. A fork taken through such a
+    # message is then bounded by the fork time alone; nothing else may relax a boundary.
+    in_export = ids.count(boundary) == 1
+    if in_export:
+        end = ids.index(boundary) + (1 if args.through_message_id else 0)
+    elif boundary in ids or not args.through_message_id or limit is None:
+        raise ValueError('Message boundary did not resolve to exactly one source message')
+    else:
+        end = len(messages)
+
+    def later(moment):
+        return limit is not None and isinstance(moment, (int, float)) and moment > limit
+
+    selected = [m for m in messages[:end] if not later((m.get('time') or {}).get('created'))]
+    if not selected:
+        raise ValueError('Cutoff did not resolve to a nonempty source prefix')
+    child = bool(info.get('parentID'))
+    turns, unknown, tools = set(), set(), set()
+    runtime, changes, pending = {}, [], []
+    latest_usage = None
+    total = {'input': 0, 'output': 0, 'reasoning': 0, 'cache_read': 0, 'cache_write': 0}
+    requests = 0
+    last = None
+    for message in selected:
+        mid, kind, time = message.get('id'), message.get('type'), message.get('time') or {}
+        last = max(v for v in [last, time.get('created')] if v is not None) if time.get('created') else last
+        if kind == 'user':
+            # A child session's prompts come from its parent agent or a person; records do not say which.
+            (unknown if child else turns).add(mid)
+        if kind != 'assistant':
+            continue
+        model = message.get('model') or {}
+        name = '/'.join(v for v in (model.get('providerID'), model.get('id')) if v) or None
+        for key, value in (('model', name), ('effort', model.get('variant'))):
+            if value is not None:
+                runtime[key] = {'value': value, 'source_message': mid,
+                                'method': 'recorded' if key == 'model' else 'recorded model variant'}
+        setting = [runtime.get(k, {}).get('value') for k in ('model', 'effort')]
+        if not changes or changes[-1]['settings'] != setting:
+            changes.append({'source_message': mid, 'settings': setting})
+        for part in message.get('content') or []:
+            if not isinstance(part, dict) or part.get('type') != 'tool' or not part.get('id'):
+                continue
+            part_time = part.get('time') or {}
+            if later(part_time.get('created')):
+                continue
+            tools.add((mid, part['id']))
+            done = part_time.get('completed')
+            if done is None or later(done):
+                pending.append({'source_message': mid, 'tool_id': part['id']})
+        usage = message.get('tokens')
+        done = time.get('completed')
+        if isinstance(usage, dict) and done is not None and not later(done):
+            cache = usage.get('cache') or {}
+            row = {'input': usage.get('input', 0), 'output': usage.get('output', 0),
+                   'reasoning': usage.get('reasoning', 0), 'cache_read': cache.get('read', 0),
+                   'cache_write': cache.get('write', 0)}
+            for key in total:
+                total[key] += row[key]
+            requests += 1
+            latest_usage = dict(row, source_message=mid)
+            runtime['context_used'] = {
+                'value': row['input'] + row['cache_read'] + row['cache_write'], 'source_message': mid,
+                'method': 'latest completed response input + cache-read + cache-write tokens; not instantaneous'}
+            last = max(last or done, done)
+    missing = {'value': None, 'status': 'unavailable', 'reason': 'not exposed in native session records'}
+    for field in ('harness_version', 'model', 'effort', 'context_used', 'context_capacity'):
+        runtime.setdefault(field, dict(missing))
+    created = (info.get('time') or {}).get('created')
+    as_of = limit if limit is not None else last
+    cutoff = {k: getattr(args, k) for k in ('before_message_id', 'through_message_id', 'cutoff_ms')
+              if getattr(args, k) is not None}
+    cutoff['boundary_in_export'] = in_export
+    size = len(json.dumps(selected, ensure_ascii=False, separators=(',', ':')).encode())
+    return {'schema': 'agent-issue-metrics/v1', 'harness': 'opencode',
+            'subject_id': args.subject_id, 'source': str(Path(args.transcript).resolve()),
+            'cutoff': cutoff, 'as_of': iso_ms(as_of) if as_of is not None else None,
+            'subject_project_cwd': (info.get('location') or {}).get('directory'),
+            'subject_title': info.get('title'), 'subject_parent_id': info.get('parentID'),
+            'subject_fork': info.get('fork'),
+            'runtime': runtime, 'runtime_changes': changes,
+            'session': {'start': iso_ms(created) if created is not None else None,
+                        'age_seconds': (as_of - created) / 1000 if None not in (as_of, created) else None,
+                        'age_is_lower_bound': created is None,
+                        'transcript_kb': None, 'physical_prefix_bytes': None,
+                        'export_prefix_bytes': size,
+                        'source_records_in_prefix': len(selected), 'human_turns': len(turns),
+                        'peer_requests': 0, 'unknown_origin_messages': len(unknown),
+                        'tool_invocations': len(tools)},
+            'pending_at_cutoff': pending,
+            'accounting': {'boundary': 'boundary_in_export false means the through-message was still in progress and absent from the export: the prefix is bounded by cutoff_ms only and that message, including any tool call it had started, is not measured',
+                           'turns': 'user-type messages in a top-level session; synthetic, skill, shell, system, and compaction messages excluded; prompts submitted by another program are not distinguishable from typed input',
+                           'unknown': 'user-type messages in a session with a parent: the sender is not recorded',
+                           'tools': 'unique tool parts started by the cutoff; pending_at_cutoff lists calls whose outcome was not yet recorded, so any outcome shown now is post-cutoff',
+                           'size': 'physical transcript size is not exposed; export_prefix_bytes is the compact serialized size of the selected export messages, not a transcript or context measure',
+                           'usage': 'responses completed by the cutoff only; session-level totals are not used because they include later and auxiliary generation'},
+            'latest_reported_usage': latest_usage,
+            'cumulative_usage': dict(total, completed_responses=requests,
+                                     method='sum of per-response reported usage in the prefix; not context occupancy')}
+
+
 def component(name, fallback, parent):
     name = name or fallback
     forbidden = r'[\x00/]' if os.name != 'nt' else r'[\x00-\x1f<>:"/\\|?*]'
@@ -280,7 +403,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='command', required=True)
     m = sub.add_parser('metrics', help='Read a subject source prefix; emit no conversation text')
-    m.add_argument('--harness', choices=('codex', 'claude'), required=True)
+    m.add_argument('--harness', choices=('codex', 'claude', 'opencode'), required=True)
     m.add_argument('--transcript', required=True)
     m.add_argument('--subject-id', required=True)
     cut = m.add_mutually_exclusive_group(required=True)
@@ -288,6 +411,10 @@ def main():
         cut.add_argument('--'+flag, type=int)
     cut.add_argument('--through-uuid')
     cut.add_argument('--before')
+    cut.add_argument('--before-message-id', help='OpenCode: stop before this message')
+    cut.add_argument('--through-message-id', help='OpenCode: stop after this message')
+    m.add_argument('--cutoff-ms', type=int,
+                   help='OpenCode: epoch milliseconds; exclude anything recorded later')
     s = sub.add_parser('save', help='Save reviewed Markdown from stdin, without overwrite')
     s.add_argument('--project', default='unknown-project')
     s.add_argument('--session', default='untitled-session')
@@ -296,7 +423,13 @@ def main():
     s.add_argument('--output')
     args = parser.parse_args()
     try:
-        result = metrics(args) if args.command == 'metrics' else save(args)
+        if args.command == 'save':
+            result = save(args)
+        else:
+            native = bool(args.before_message_id or args.through_message_id)
+            if native != (args.harness == 'opencode') or (args.cutoff_ms is not None and not native):
+                raise ValueError('OpenCode needs a message-ID cutoff; other harnesses do not accept one')
+            result = opencode_metrics(args) if native else metrics(args)
     except (OSError, ValueError, RuntimeError) as exc:
         print(json.dumps({'status': 'failed', 'error': str(exc),
                           'intended_output': getattr(args, 'output', None)}))

@@ -20,8 +20,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output-dir",
-        default=".codex/artifacts/doc-pattern",
-        help="Directory where plan artifacts will be written",
+        default=None,
+        help="Directory where plan artifacts will be written (default: the divergence report's directory)",
     )
     parser.add_argument(
         "--level",
@@ -176,7 +176,7 @@ def build_plan_markdown(payload: dict[str, Any], level: str) -> str:
     lines.append("## AGENTS Handling")
     lines.append("")
     lines.append("If AGENTS layout issues are present, do not auto-edit AGENTS files in this workflow.")
-    lines.append("Recommend the sibling `agent-instructions-cleanup` skill for AGENTS refactoring (Codex: `$agentic-devcraft:agent-instructions-cleanup`; Claude: `/agentic-devcraft:agent-instructions-cleanup`; Air: attach the skill).")
+    lines.append("Recommend the sibling `agent-instructions-cleanup` skill for AGENTS refactoring (Codex: `$agentic-devcraft:agent-instructions-cleanup`; Claude: `/agentic-devcraft:agent-instructions-cleanup`; OpenCode: `@agent-instructions-cleanup`; Air: attach the skill).")
     lines.append("")
 
     lines.append("## Advisory Backlog")
@@ -239,7 +239,7 @@ def build_migration_actions_markdown(rows: list[dict[str, Any]]) -> str:
 def main() -> int:
     args = parse_args()
     divergence_path = Path(args.divergence_json).resolve()
-    output_dir = Path(args.output_dir).resolve()
+    output_dir = Path(args.output_dir).resolve() if args.output_dir else divergence_path.parent
     output_dir.mkdir(parents=True, exist_ok=True)
 
     payload = json.loads(divergence_path.read_text(encoding="utf-8"))

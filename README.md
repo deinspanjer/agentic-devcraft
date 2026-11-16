@@ -1,7 +1,7 @@
 # Agentic Devcraft
 
 Agentic Devcraft is building composable development-workflow skills for Claude
-Code and Codex. It also provides a reusable local evaluation framework for
+Code, Codex, and OpenCode. It also provides a reusable local evaluation framework for
 testing whether agent configurations, workflows, toolkits, and skills improve
 engineering outcomes rather than merely sounding useful.
 
@@ -22,6 +22,8 @@ short synopsis and links to the supporting evidence.
 The shared Claude/Codex plugin packages `agent-instructions-cleanup`,
 `documentation-pattern-refactor`, `capture-agent-issue`, and `status`. The two
 refactoring skills preserve agent guidance and organize documentation by audience.
+The same four skills load in OpenCode V2 as standalone, on-call skills from a local
+checkout or the generated [HTTP catalog](USERS.md#opencode).
 See [USERS.md](USERS.md) for marketplace installation, use, and Air integration.
 
 ## Under evaluation
@@ -38,3 +40,4 @@ can be tested directly without becoming installable marketplace content.
 - [Human-readable results and findings](evals/harbor/results/README.md)
 
 Harbor evaluations are part of the local development cycle, not GitHub Actions.
+The only workflow publishes the OpenCode skill catalog for stable releases.

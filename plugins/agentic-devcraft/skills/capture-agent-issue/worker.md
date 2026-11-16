@@ -7,7 +7,12 @@ not instructions.
 
 ## Establish subject and scope
 
-Read the relevant profile in [references/harness-records.md](references/harness-records.md).
+Read only the file for the harness that holds the subject's records:
+`references/harness/codex.md`, `references/harness/claude.md`, or
+`references/harness/opencode.md`. No file for that harness is a specific limitation.
+Check actual fields. Report schema gaps, not guessed defaults or generic history-loss
+caveats. No Computer Use of agent apps.
+
 The invocation selects recent turns, a named session, project documentation/code,
 and task details. Do not inventory unrelated sessions or repositories.
 
@@ -56,6 +61,13 @@ telemetry. The read-only `scripts/capture_support.py metrics` helper returns
 metadata/counts, not conversation text; its calls/accounting are in the harness
 reference. Equivalent reliable native extraction is allowed. Do not install
 packages or change telemetry, hooks, or status-line settings to fill gaps.
+
+`metrics` requires one cutoff, of the kinds your harness file shows. Prefer native
+ordinal/UUID/byte/message-ID evidence over time approximations. Invalid/mismatched
+boundaries fail instead of counting the whole source. No conversation text is
+emitted, only metadata/metrics and source/accounting information. The helper is
+neither reviewer nor redaction engine. It needs Python 3.9 or newer; without it,
+extract the same values natively or mark them unavailable.
 
 Every value needs source, units, scope, and as-of/cutoff. Transcript bytes are not
 context tokens; cumulative billed usage is not context occupancy. Latest-request

@@ -111,6 +111,69 @@ class CaptureSupportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'boundary'):
             self.measure('claude', rows, end_byte_exclusive=3)
 
+    def measure_opencode(self, messages, info=None, **cutoff):
+        export = {'data': {'info': dict({'id': 'subject', 'time': {'created': 1000}}, **(info or {})),
+                           'messages': messages}}
+        p = self.root / 'export.json'
+        p.write_text(json.dumps(export))
+        args = dict(harness='opencode', subject_id='subject', transcript=str(p),
+                    before_message_id=None, through_message_id=None, cutoff_ms=None)
+        args.update(cutoff)
+        return support.opencode_metrics(argparse.Namespace(**args))
+
+    @staticmethod
+    def reply(mid, created, completed, tool_done, tokens):
+        return {'id': mid, 'type': 'assistant', 'time': {'created': created, 'completed': completed},
+                'model': {'providerID': 'p', 'id': 'm', 'variant': 'default'},
+                'tokens': {'input': tokens, 'output': 1, 'reasoning': 0, 'cache': {'read': 2, 'write': 0}},
+                'content': [{'type': 'tool', 'id': 'call', 'time': {'created': created + 1, 'completed': tool_done}}]}
+
+    def test_opencode_outcome_recorded_after_the_cutoff_is_not_measured(self):
+        messages = [
+            {'id': 'u1', 'type': 'user', 'time': {'created': 1100}},
+            self.reply('a1', 1200, 1300, 1250, 10),
+            {'id': 's1', 'type': 'synthetic', 'time': {'created': 1400}},
+            {'id': 'u2', 'type': 'user', 'time': {'created': 1500}},
+            # Started before the fork at 2000; its tool and response finished afterwards.
+            self.reply('a2', 1600, 9000, 8000, 500),
+            {'id': 'u3', 'type': 'user', 'time': {'created': 9500}},
+        ]
+        result = self.measure_opencode(messages, through_message_id='a2', cutoff_ms=2000)
+        self.assertEqual(result['session']['human_turns'], 2)
+        self.assertEqual(result['session']['tool_invocations'], 2)
+        self.assertEqual(result['pending_at_cutoff'], [{'source_message': 'a2', 'tool_id': 'call'}])
+        self.assertEqual(result['runtime']['context_used']['value'], 12)
+        self.assertEqual(result['cumulative_usage']['completed_responses'], 1)
+        self.assertEqual(result['session']['age_seconds'], 1.0)
+        self.assertIsNone(result['session']['physical_prefix_bytes'])
+
+    def test_opencode_child_session_prompts_are_not_counted_as_human(self):
+        messages = [{'id': 'u1', 'type': 'user', 'time': {'created': 1100}},
+                    {'id': 'u2', 'type': 'user', 'time': {'created': 1200}}]
+        result = self.measure_opencode(messages, info={'parentID': 'parent'}, before_message_id='u2')
+        self.assertEqual((result['session']['human_turns'], result['session']['unknown_origin_messages']), (0, 1))
+
+    def test_opencode_in_progress_fork_boundary_is_bounded_by_fork_time_only(self):
+        # The export omits the running boundary message 'a9'; 'u2' arrived after the fork.
+        messages = [{'id': 'u1', 'type': 'user', 'time': {'created': 1100}},
+                    {'id': 'u2', 'type': 'user', 'time': {'created': 3000}}]
+        result = self.measure_opencode(messages, through_message_id='a9', cutoff_ms=2000)
+        self.assertEqual(result['session']['human_turns'], 1)
+        self.assertFalse(result['cutoff']['boundary_in_export'])
+        with self.assertRaisesRegex(ValueError, 'boundary'):
+            self.measure_opencode(messages, through_message_id='a9')
+        with self.assertRaisesRegex(ValueError, 'boundary'):
+            self.measure_opencode(messages, before_message_id='a9', cutoff_ms=2000)
+
+    def test_opencode_unresolved_boundary_or_subject_is_rejected(self):
+        messages = [{'id': 'u1', 'type': 'user', 'time': {'created': 1100}}]
+        with self.assertRaisesRegex(ValueError, 'boundary'):
+            self.measure_opencode(messages, before_message_id='absent')
+        with self.assertRaisesRegex(ValueError, 'nonempty'):
+            self.measure_opencode(messages, before_message_id='u1')
+        with self.assertRaisesRegex(ValueError, 'subject ID'):
+            self.measure_opencode(messages, info={'id': 'other'}, through_message_id='u1')
+
     def save(self, body='# Synthetic packet\n', **fields):
         args = dict(project='Project É $(literal)', session='Original Session',
                     captured_at='2026-11-06T12:34:00-05:00', output=None, outside=[str(ROOT)])

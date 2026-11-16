@@ -1,6 +1,8 @@
 ---
 name: documentation-pattern-refactor
 description: Establish and enforce an audience-based documentation layout with README/USERS/DEVELOPERS/TODO rules, classify existing content into those domains, report structural and domain mismatches, and execute audit/scaffolding/restructuring refactors with explicit confirmation gates.
+metadata:
+  opencode/autoinvoke: false
 ---
 
 # Documentation Pattern Refactor
@@ -51,23 +53,24 @@ running from another working directory.
 
 1. Run an audit:
 ```bash
-python3 scripts/audit_docs_pattern.py --root <workspace> --scope root --strictness balanced --output-dir <workspace>/.codex/artifacts/doc-pattern
+python3 scripts/audit_docs_pattern.py --root <workspace> --scope root --strictness balanced --output-dir <workspace>/.agents/artifacts/doc-pattern
 ```
 By default, hidden leading-dot directories (for example `.codex`, `.agents`) are excluded to reduce false positives. Include them only when explicitly requested:
 ```bash
 # Include one specific hidden directory
-python3 scripts/audit_docs_pattern.py --root <workspace> --scope root --output-dir <workspace>/.codex/artifacts/doc-pattern --include-hidden-dir .codex
+python3 scripts/audit_docs_pattern.py --root <workspace> --scope root --output-dir <workspace>/.agents/artifacts/doc-pattern --include-hidden-dir .codex
 
 # Include all hidden directories
-python3 scripts/audit_docs_pattern.py --root <workspace> --scope root --output-dir <workspace>/.codex/artifacts/doc-pattern --include-hidden-dirs
+python3 scripts/audit_docs_pattern.py --root <workspace> --scope root --output-dir <workspace>/.agents/artifacts/doc-pattern --include-hidden-dirs
 ```
+Without `--output-dir`, the audit writes to `<workspace>/.agents/artifacts/doc-pattern` and the planner writes beside the divergence report.
 Use `--scope all` only when the user explicitly asks to enforce module/subdirectory triads.
 2. Review significant divergences in `divergence_report.md`.
 3. Build and review `classification_report.md` from the audit output (section-level mapping with rationale).
 4. Ask whether to generate and execute a refactor plan.
 5. Generate a level-aware plan:
 ```bash
-python3 scripts/generate_refactor_plan.py --divergence-json <workspace>/.codex/artifacts/doc-pattern/divergence_report.json --output-dir <workspace>/.codex/artifacts/doc-pattern --level <audit|scaffolding|restructuring>
+python3 scripts/generate_refactor_plan.py --divergence-json <workspace>/.agents/artifacts/doc-pattern/divergence_report.json --output-dir <workspace>/.agents/artifacts/doc-pattern --level <audit|scaffolding|restructuring>
 ```
 6. Confirm level-aware artifacts exist:
 - `migration_markers.md` for `scaffolding`
@@ -201,7 +204,7 @@ Before marking `scaffolding` or `restructuring` complete, explicitly validate al
 - `advisory`: downgrade hard failures into recommendations.
 
 ## AGENTS Handling
-Audit `AGENTS.md` issues but do not auto-edit AGENTS files. If AGENTS refactoring is needed, recommend using the sibling `agent-instructions-cleanup` skill (`$agentic-devcraft:agent-instructions-cleanup` in Codex, `/agentic-devcraft:agent-instructions-cleanup` in Claude, or attach the skill in Air).
+Audit `AGENTS.md` issues but do not auto-edit AGENTS files. If AGENTS refactoring is needed, recommend using the sibling `agent-instructions-cleanup` skill (`$agentic-devcraft:agent-instructions-cleanup` in Codex, `/agentic-devcraft:agent-instructions-cleanup` in Claude, `@agent-instructions-cleanup` in OpenCode, or attach the skill in Air). A nested `AGENTS.md` is a normal scoped instruction file, not a divergence on its own.
 
 ## Output Requirements
 Always produce or reference these artifacts when running the scripted audit/plan flow:

@@ -55,7 +55,6 @@ Do not restate current behavior or implemented requirements.
 ## Divergence Classes
 - `missing_core_doc`: required audience docs missing at root (and modules only when scope is `all`).
 - `todo_not_top_level`: `TODO.md` appears outside repository root.
-- `agents_not_top_level`: `AGENTS.md` appears outside repository root.
 - `audience_mismatch`: dominant content appears in the wrong audience doc.
 - `classification_gap`: content cannot be confidently mapped to domain rules and needs explicit placement decisions.
 - `significant_duplication`: substantial overlap between docs that should be consolidated.
@@ -72,7 +71,8 @@ Do not restate current behavior or implemented requirements.
 
 ## AGENTS Policy
 - Do not auto-edit AGENTS files in this skill.
-- Report AGENTS-related issues with recommendation to use the sibling `agent-instructions-cleanup` skill (Codex: `$agentic-devcraft:agent-instructions-cleanup`; Claude: `/agentic-devcraft:agent-instructions-cleanup`; Air: attach the skill).
+- A nested `AGENTS.md` is a normal scoped instruction file, not a divergence on its own.
+- Report AGENTS-related issues with recommendation to use the sibling `agent-instructions-cleanup` skill (Codex: `$agentic-devcraft:agent-instructions-cleanup`; Claude: `/agentic-devcraft:agent-instructions-cleanup`; OpenCode: `@agent-instructions-cleanup`; Air: attach the skill).
 
 ## Refactor Execution Policy
 - Always require explicit confirmation before edits.

@@ -173,8 +173,8 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--output-dir",
-        default=".codex/artifacts/doc-pattern",
-        help="Directory for audit artifacts",
+        default=None,
+        help="Directory for audit artifacts (default: <root>/.agents/artifacts/doc-pattern)",
     )
     parser.add_argument(
         "--include-hidden-dirs",
@@ -588,21 +588,6 @@ def detect_divergences(
                     requires_confirmation=True,
                 )
             )
-        if path.name == "AGENTS.md" and rel.parent != Path("."):
-            divergences.append(
-                Divergence(
-                    rule_id="agents_not_top_level",
-                    severity=adjust_severity("medium", strictness),
-                    category="structure",
-                    path=rel_str,
-                    summary="AGENTS.md appears outside repository root.",
-                    evidence="Found AGENTS.md in a subdirectory.",
-                    recommended_action=(
-                        "Do not auto-edit AGENTS files here; recommend the sibling agent-instructions-cleanup skill to normalize instruction layout (Codex: $agentic-devcraft:agent-instructions-cleanup; Claude: /agentic-devcraft:agent-instructions-cleanup; Air: attach the skill)."
-                    ),
-                    requires_confirmation=True,
-                )
-            )
 
     for path in files:
         if path.name not in AUDIENCE_DOCS:
@@ -848,7 +833,11 @@ def write_classification_report(output_path: Path, rows: list[dict[str, Any]]) -
 def main() -> int:
     args = parse_args()
     root = Path(args.root).resolve()
-    output_dir = Path(args.output_dir).resolve()
+    output_dir = (
+        Path(args.output_dir).resolve()
+        if args.output_dir
+        else root / ".agents" / "artifacts" / "doc-pattern"
+    )
     output_dir.mkdir(parents=True, exist_ok=True)
     include_hidden_named = normalize_hidden_includes(args.include_hidden_dir)
 
