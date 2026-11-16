@@ -113,7 +113,7 @@ maintainer's explicit go-ahead each time.
 3. Publish a GitHub release tagged `v<version>`, not a draft or prerelease. The
    workflow checks out that tag, generates and validates the catalog, and deploys
    only the generated site. Drafts, prereleases, and branch pushes do not publish.
-4. Fetch `index.json` and a listed file from the deployed URL, expected to be
+4. Fetch `index.json` and a listed file from the deployed URL,
    `https://deinspanjer.github.io/agentic-devcraft/opencode/skills/`, and load one
    skill from it in an isolated OpenCode instance.
 

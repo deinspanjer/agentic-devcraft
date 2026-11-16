@@ -15,7 +15,7 @@
 
 - [x] 3.1 Add the catalog configuration, version-driven update explanation, provenance, explicit invocation link, and source-removal procedure to `USERS.md`, with a short `README.md` link. Inspect that instructions preserve existing configuration, distinguish OpenChamber's Git catalog and native package plugins, and do not claim normal-user installation has already occurred.
 - [x] 3.2 Run `openspec validate opencode-http-skill-catalog --strict`, focused generator checks, and a local HTTP/OpenCode loading smoke using generated files and isolated configuration. Verify a skill loads a supporting resource, and the generated status provenance is reported by the companion implementation; confirm existing marketplaces and global user sources remain untouched.
-- [ ] 3.3 After explicit publication authorization and companion compatibility completion, enable/configure Pages if needed and publish the chosen stable release. Fetch the deployed index and listed file URLs, confirm one native skill/resource load from the deployed URL, and record the actual URL and result. No polling/cache-internals investigation or multi-skill transaction check is required.
+- [x] 3.3 After explicit publication authorization and companion compatibility completion, enable/configure Pages if needed and publish the chosen stable release. Fetch the deployed index and listed file URLs, confirm one native skill/resource load from the deployed URL, and record the actual URL and result. No polling/cache-internals investigation or multi-skill transaction check is required.
 
 ## Workflow follow-up
 
