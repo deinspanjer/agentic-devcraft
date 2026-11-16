@@ -5,3 +5,6 @@ evals/harbor/generated/
 .agents/skills/
 .claude/commands/opsx/
 .claude/skills/openspec-*/
+
+# Locally retained issue packets; the capture skill still defaults to host temp.
+/captures/agent-issues/

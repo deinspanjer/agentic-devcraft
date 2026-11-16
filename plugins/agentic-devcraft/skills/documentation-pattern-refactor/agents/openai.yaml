@@ -1,0 +1,4 @@
+interface:
+  display_name: "Documentation Pattern Refactor"
+  short_description: "Audit and refactor documentation layout rules"
+  default_prompt: "Use $agentic-devcraft:documentation-pattern-refactor to audit this workspace docs pattern, report divergences, and produce a safe refactor plan."

@@ -7,5 +7,6 @@
   },
   "homepage": "https://github.com/deinspanjer/agentic-devcraft",
   "repository": "https://github.com/deinspanjer/agentic-devcraft",
-  "skills": "./skills/"
+  "skills": "./skills/",
+  "version": "0.3.0"
 }

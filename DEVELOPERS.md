@@ -37,7 +37,28 @@ local trials, fixture construction, result paths, and rescoring. See
 [the evaluation methodology](docs/EVALUATION.md) before interpreting results or
 designing a new rubric.
 
+For the packaged `capture-agent-issue` skill, run the focused stdlib helper checks
+with `.venv/bin/python -m unittest discover -s evals/harbor/tests -p test_capture_agent_issue.py`.
+They cover source-cutoff/authorship accounting and exclusive private packet writes;
+they do not substitute for native skill-loading probes or model-based packet review.
+
 ## Skill lifecycle
+
+The `agent-instructions-cleanup` and `documentation-pattern-refactor` skills were
+extracted from the existing `ai-tools-internal/.skills/` sources into the shared
+plugin in version `0.3.0`. Keep their supporting scripts, references, and metadata
+with the skill. The documentation baseline is bundled in `references/pattern_spec.md`;
+the former machine-specific repository path is not a runtime dependency. References
+to unavailable historical improvement-plan files were removed during extraction.
+The cleanup skill was copied unchanged; documentation workflow changes are limited
+to portable paths and host-aware invocation names.
+
+Packaging validation covers both host manifests, skill frontmatter, and a temporary
+fixture exercising section classification, hidden-directory exclusion, all three
+plan levels, and preservation of the audited input files. These checks establish
+packaging/helper behavior, not model-based effectiveness of the refactoring workflows.
+Air consumes these same sources through its skill directory/registry support; see
+[USERS.md](USERS.md#air-in-jetbrains-ides) for setup options.
 
 1. Write one candidate source under `proposals/skills/`.
 2. Add deterministic failure-mode fixtures and comparison declarations that

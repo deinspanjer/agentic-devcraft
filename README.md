@@ -19,8 +19,10 @@ short synopsis and links to the supporting evidence.
 
 ## Released
 
-The shared Claude/Codex plugin currently publishes only the `status` skill. See
-[USERS.md](USERS.md) for installation and use.
+The shared Claude/Codex plugin packages `agent-instructions-cleanup`,
+`documentation-pattern-refactor`, `capture-agent-issue`, and `status`. The two
+refactoring skills preserve agent guidance and organize documentation by audience.
+See [USERS.md](USERS.md) for marketplace installation, use, and Air integration.
 
 ## Under evaluation
 

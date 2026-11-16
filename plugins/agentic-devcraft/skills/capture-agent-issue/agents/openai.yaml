@@ -1,0 +1,5 @@
+interface:
+  display_name: "Capture Agent Issue"
+  short_description: "Capture agent issue evidence into a local packet"
+policy:
+  allow_implicit_invocation: false

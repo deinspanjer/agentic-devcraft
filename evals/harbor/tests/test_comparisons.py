@@ -39,7 +39,15 @@ class ComparisonValidationTest(unittest.TestCase):
             path.parent.name
             for path in (ROOT / "plugins/agentic-devcraft/skills").glob("*/SKILL.md")
         }
-        self.assertEqual(released, {"status"})
+        self.assertEqual(
+            released,
+            {
+                "agent-instructions-cleanup",
+                "capture-agent-issue",
+                "documentation-pattern-refactor",
+                "status",
+            },
+        )
         for path in (ROOT / "evals/harbor/comparisons").glob("*.json"):
             comparison = json.loads(path.read_text())
             for arm in comparison["arms"]:
