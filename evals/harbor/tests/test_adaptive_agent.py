@@ -103,6 +103,28 @@ class FakeSubject:
 
 
 class AdaptiveScenarioTest(unittest.IsolatedAsyncioTestCase):
+    async def test_single_stage_policy_does_not_send_an_extension(self):
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw)
+            logs, workspace = root / "logs", root / "workspace"
+            logs.mkdir()
+            workspace.mkdir()
+            initialize_git_fixture(workspace)
+            policy = root / "policy.json"
+            policy.write_text(json.dumps({"version": "v1", "answers": [], "stop_reasons": []}))
+            agent = AdaptiveAgent(logs_dir=logs, subject_agent="codex", scenario_policy_path=str(policy))
+            subject = FakeSubject(logs, workspace, "unused")
+            agent._subject = subject
+
+            async def complete(_request):
+                return {"action": "complete", "basis_ids": [], "reason": "validated"}
+
+            agent._testing_agent = complete
+            result = await agent._run_scenario("Repair sync.", FakeEnvironment(workspace), AgentContext(), time.monotonic())
+            self.assertEqual(subject.messages, ["Repair sync."])
+            self.assertEqual(list(result["stages"]), ["initial"])
+            self.assertEqual(len(result["checkpoints"]), 1)
+
     def test_controller_schema_is_strict_and_nullable(self):
         self.assertEqual(
             set(CONTROLLER_SCHEMA["required"]),

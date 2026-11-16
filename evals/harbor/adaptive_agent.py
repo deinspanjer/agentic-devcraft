@@ -155,8 +155,8 @@ class AdaptiveAgent(BaseAgent):
             if extension_prompt_path
             else None
         )
-        if (self._scenario_policy is None) != (self._extension_prompt is None):
-            raise ValueError("scenario policy and extension prompt must be supplied together")
+        if self._extension_prompt is not None and self._scenario_policy is None:
+            raise ValueError("an extension prompt requires a scenario policy")
         if verifier_oracle_path and verifier_reference_path:
             raise ValueError("supply one verifier reference path")
         verifier_reference_path = verifier_reference_path or verifier_oracle_path
@@ -507,7 +507,7 @@ class AdaptiveAgent(BaseAgent):
         initial = await run_stage("initial", 0)
         checkpoints = [await self._checkpoint(environment, "initial", transcript, initial)]
         stages = {"initial": initial}
-        if initial["termination"] in {"completed", "turn_limit"}:
+        if self._extension_prompt is not None and initial["termination"] in {"completed", "turn_limit"}:
             extension_start = len(transcript)
             transcript.append({"role": "user", "content": self._extension_prompt})
             remaining = self._conversation_timeout_sec - (time.monotonic() - started)
