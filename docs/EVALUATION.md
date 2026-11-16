@@ -199,6 +199,11 @@ to the scenario class it exercised.
 The first calibration scenario is the
 [date-filter microbenchmark](../evals/harbor/benchmarks/date-filter/README.md).
 
+The [retired complexity experiments](evidence-before-complexity.md) did not
+establish a practically useful improvement. Their short lessons note explains
+why the experiment-specific machinery and detailed records were deleted rather
+than maintained or archived. It is not a reproducible benchmark or efficacy claim.
+
 ## Interpretation
 
 Do not infer efficacy from installation, a single trial, or a scenario where all

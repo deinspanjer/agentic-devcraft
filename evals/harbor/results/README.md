@@ -38,6 +38,11 @@ supports them.
 
 ## Reuse and replication
 
+The [retired complexity experiments](../../../docs/evidence-before-complexity.md)
+retain only a short methodology and lessons note. Their detailed records and
+experiment-specific tooling were deleted because their practical value did not
+justify retention. They are not part of the reproducible studies indexed above.
+
 Raw trajectories, snapshots, controller records, and subject workspaces are not
 committed because they are large and may contain private subject-authored text.
 That prevents independent re-grading of every historical output. The repository
