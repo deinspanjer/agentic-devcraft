@@ -43,6 +43,7 @@ class ComparisonValidationTest(unittest.TestCase):
             released,
             {
                 "agent-instructions-cleanup",
+                "ask-devcraft",
                 "capture-agent-issue",
                 "documentation-pattern-refactor",
                 "status",

@@ -27,7 +27,8 @@ Verify with `env -u CODEX_HOME codex plugin list --marketplace agentic-devcraft 
 `claude plugin list --json`, and `claude plugin details agentic-devcraft`.
 The plugin should be installed/enabled and its inventory include
 `agent-instructions-cleanup`, `documentation-pattern-refactor`, `capture-agent-issue`,
-and `status`. Refresh/reopen the clients after installation. Claude also supports
+`ask-devcraft`, and `status`; an installation from a release tagged before
+`ask-devcraft` was added lists the other four. Refresh/reopen the clients after installation. Claude also supports
 `/reload-plugins`; Codex local plugin updates may require restarting the app.
 
 For local updates, keep the source checkout available, update the plugin version,
@@ -68,7 +69,7 @@ is not a Git repository source for OpenChamber's Skills Catalog, which copies
 individual skill directories from a Git repository instead.
 
 The skill IDs are `agent-instructions-cleanup`, `documentation-pattern-refactor`,
-`capture-agent-issue`, and `status`, with no plugin namespace. All four are on-call
+`capture-agent-issue`, `ask-devcraft`, and `status`, with no plugin namespace. All five are on-call
 in OpenCode: they are not offered to the model for automatic use. Select one
 explicitly with `@`, for example `@status`, in the OpenCode CLI or OpenChamber.
 OpenChamber's composer also accepts `$status`; the OpenCode CLI does not.
@@ -84,6 +85,86 @@ Prerequisites: `python3` 3.9 or newer for the documentation helpers and capture
 metrics. Capture also needs the `opencode` command in the session's shell to reach
 the server running that session; it checks this itself and reports a limitation
 when it cannot.
+
+## Ask Devcraft
+
+`ask-devcraft` is packaged under
+[`plugins/agentic-devcraft/skills/ask-devcraft/`](plugins/agentic-devcraft/skills/ask-devcraft/SKILL.md)
+and is explicit-only on every host: `/agentic-devcraft:ask-devcraft` in Claude,
+`$agentic-devcraft:ask-devcraft` in Codex, `@ask-devcraft` in OpenCode. It was
+added after version `0.4.0` was tagged, so until the next plugin version is
+published it reaches local-checkout installations only, not the published
+OpenCode catalog or a marketplace installation from that tag.
+Ask it which skill fits a development task,
+or point it at the problem in the current thread. It also takes complaints about
+how the agent works: drift from what you asked for, doing more than asked,
+asking or reporting instead of acting, and padded docs or agent rules. Where no
+curated skill fits part of a complaint, it says so.
+
+In an ordinary session it hands the routing to one background worker and relays
+the worker's answer, so expect a short pause before the reply. The worker reads
+the knowledge base; your session receives only the question it sent and the
+answer that came back. This is not cheaper or faster than routing in the session:
+it costs about a quarter more tokens and about the same time. What it buys is
+that the routing reads (25 to 110 KB a question) stay out of your session. When the worker needs a
+clarifying answer or your consent, the question comes back through your session
+and your reply goes to the same worker. Where no subagent is available (the
+session is itself a subagent or a fork, the host has no subagent tool, or the
+tool is denied), it says so and routes in the session you invoked it from.
+Delegation was exercised on OpenCode 2.3.0, headlessly on Claude Code 2.1.326
+and Codex CLI 0.169.0 and 0.170.0, and in one hand-run interactive session each
+on Claude Code, Codex, Cursor and JetBrains Air (Codex agent). Those sessions
+found faults that were then fixed and re-checked headlessly only; the desktop
+apps of Claude Code and Codex are unprobed.
+
+It answers from the skills installed on the host and a bundled knowledge base
+curated from six sources: Agentic Devcraft, Matt Pocock's skills,
+`openai/plugins`, `anthropics/skills`, `cursor/plugins`, and Ponytail, plus three
+individually chosen skills from other repositories (two test-suite audits and a
+preventive drift check). Each curated record
+adds what a skill's own description leaves out: where it applies, what it is not
+for, what it needs, and its side effects. Records describe a source at a pinned
+commit, so it reads the installed copy before saying what a skill does. Sources
+reuse names such as `tdd` and `code-review`; it names the collection with the
+skill. Installed means everything the host has registered, not only the skills
+the model is shown: hosts hide explicit-only skills from that list, so the
+worker takes the inventory from the host itself. On OpenCode it uses
+`opencode api skill.list`; on Claude Code it reads skill frontmatter from the
+project, personal, synced and plugin locations; on Codex it reads the skill
+roots Codex lists. Other hosts have no recorded rule yet.
+
+It ranks in this order, moving down only when nothing above fits:
+
+1. Installed skills.
+2. Skills that are not installed, from a collection you already have a skill
+   from. These are named directly, labelled as not installed, with where to find
+   them.
+3. Other collections. It asks before introducing a collection you have nothing
+   from.
+
+A collection is one author's set of skills, such as pstack or Superpowers, not
+the marketplace that lists it: having pstack skills does not make the other
+`cursor/plugins` plugins familiar. An installed copy whose wording differs from
+the curated record still counts when it is clearly the same skill, and the
+answer says that your copy differs. A collection with no packaging for your host
+is still recommended; the answer names a host dependence only when the skill
+itself states one.
+
+When an installed router owns the question (`ask-matt`, Superpowers'
+`using-superpowers`, pstack's `poteto-help` or `poteto-mode`, or a vendor
+plugin's router), it recommends that router instead of re-deriving its routing.
+When you have a collection's skills but not its router, it recommends installing
+the router.
+
+When no candidate clearly fits, it asks one or two clarifying questions. If it is
+still unsure, it offers, and waits for your consent, to look in configured skill
+directories the host does not expose and to check a source for skills newer
+than the pinned commit.
+
+It recommends one route, states whether the fit is curated or inferred, whether
+the skill is installed, and its missing prerequisites and side effects, then
+waits. It does not install skills, change sources, or run the recommended
+workflow.
 
 ## Status
 
