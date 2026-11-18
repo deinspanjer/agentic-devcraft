@@ -1,19 +1,19 @@
 # Agentic Devcraft
-Source: https://github.com/deinspanjer/agentic-devcraft @ a3a7f4169d0efaca06d864941593b36166c403e7
+Source: https://github.com/deinspanjer/agentic-devcraft @ 8c5273228bc9905659b47f7abfef4941981fe485
 Distribution (agentic-devcraft): one collection. Claude Code and Codex: plugin `agentic-devcraft@agentic-devcraft`, with the repository as the marketplace. OpenCode: the skill catalog `https://deinspanjer.github.io/agentic-devcraft/opencode/skills/`, added to the `skills` array of `opencode.json`. Released skill directories are `plugins/agentic-devcraft/skills/<skill>/`; the repository's USERS.md has the commands.
 Curated records of remote catalog entries, not proof of installation: check at runtime that a skill is available in the current host and read its current SKILL.md before relying on any detail below.
 
-Curated 2026-11-17 at plugin 0.4.0. The uncommitted working-tree changes at that commit are docs only. `ask-devcraft` itself is released (`plugins/agentic-devcraft/skills/ask-devcraft/`) and needs no record here; the Source pin is bumped to the release commit when one exists. Released skills come first; unreleased candidates are in their own section at the end. Agentic Devcraft is always a familiar collection, because ask-devcraft is itself a Devcraft skill: a released skill that is not installed is named directly with its install prerequisites, and an unreleased candidate is never recommended unless the inventory already lists it as installed.
+Curated 2026-11-18 at plugin 0.5.0. `ask-devcraft` itself is released (`plugins/agentic-devcraft/skills/ask-devcraft/`) and needs no record here. Released skills come first; unreleased candidates are in their own section at the end. Agentic Devcraft is always a familiar collection, because ask-devcraft is itself a Devcraft skill: a released skill that is not installed is named directly with its install prerequisites, and an unreleased candidate is never recommended unless the inventory already lists it as installed.
 
 ## Family: agentic-devcraft
 - source repo: https://github.com/deinspanjer/agentic-devcraft (released skills in `plugins/agentic-devcraft/skills/`; unreleased candidates in `proposals/skills/`)
-- manifest notes: Claude Code plugin and Codex plugin, both 0.4.0 ("Composable development-workflow skills"); Codex marketplace policy installation AVAILABLE, authentication ON_INSTALL. No MCP server, app connector, hook, command, subagent or Cursor manifest. OpenCode and Air load the skill directories directly (no plugin manifest); on OpenCode every released skill is on-call (`opencode/autoinvoke: false`). Candidates ship in no distribution and may be auto-selected if a host loads the checkout. No skill needs credentials; python3 3.9+ for two of them.
+- manifest notes: Claude Code plugin and Codex plugin, both 0.5.0 ("Composable development-workflow skills"); Codex marketplace policy installation AVAILABLE, authentication ON_INSTALL. No MCP server, app connector, hook, command, subagent or Cursor manifest. OpenCode and Air load the skill directories directly (no plugin manifest); on OpenCode every released skill is on-call (`opencode/autoinvoke: false`). Candidates ship in no distribution and may be auto-selected if a host loads the checkout. No skill needs credentials; python3 3.9+ for two of them.
 - router: none. No skill sequences the others; the only cross-reference is `documentation-pattern-refactor` to `agent-instructions-cleanup`. Three candidates explicitly preserve the active workflow; `evidence-before-complexity` is a scope guard.
 - development distance: core-dev (agent-instruction and docs maintenance, review and planning discipline, agent-session evidence)
 - disclosure recommendation: simple. Eight records (4 released skills, 4 candidates; ask-devcraft itself needs none), no router; they fit one source catalog without a separate disclosure file.
 
 ### status
-- id: agentic-devcraft:status; status: released (plugin 0.4.0); source path: plugins/agentic-devcraft/skills/status/SKILL.md
+- id: agentic-devcraft:status; status: released (plugin 0.5.0); source path: plugins/agentic-devcraft/skills/status/SKILL.md
 - description: "Report the loaded Agentic Devcraft status skill's version, provenance, and plugin state when asked about this installation or its version."
 - use when: A question about this Devcraft installation: which version is loaded, where it came from, whether the plugin is active.
 - not for: A skill inventory or what else is installed (use the host's own skill list); it reports nothing about the project.
@@ -22,7 +22,7 @@ Curated 2026-11-17 at plugin 0.4.0. The uncommitted working-tree changes at that
 - part of: standalone.
 
 ### capture-agent-issue
-- id: agentic-devcraft:capture-agent-issue; status: released (plugin 0.4.0); source path: plugins/agentic-devcraft/skills/capture-agent-issue/SKILL.md
+- id: agentic-devcraft:capture-agent-issue; status: released (plugin 0.5.0); source path: plugins/agentic-devcraft/skills/capture-agent-issue/SKILL.md
 - description: "Capture a local agent issue packet for skill tuning and experiments. Only run when the user explicitly invokes capture-agent-issue."
 - use when: "The agent just did something wrong or unexpected and I want it recorded as evidence for skill tuning." Explicit invocation only.
 - not for: fixing the task, reviewing code, or proposing environment changes (`retro` in mattpocock-skills proposes those); it only records evidence.
@@ -31,7 +31,7 @@ Curated 2026-11-17 at plugin 0.4.0. The uncommitted working-tree changes at that
 - part of: standalone; delegates once to a fresh-context worker in an ordinary session.
 
 ### agent-instructions-cleanup
-- id: agentic-devcraft:agent-instructions-cleanup; status: released (plugin 0.4.0); source path: plugins/agentic-devcraft/skills/agent-instructions-cleanup/SKILL.md
+- id: agentic-devcraft:agent-instructions-cleanup; status: released (plugin 0.5.0); source path: plugins/agentic-devcraft/skills/agent-instructions-cleanup/SKILL.md
 - description: "This skill should be used when refactoring AGENTS.md / AGENTS.override.md across a project tree to enforce progressive disclosure while preserving all guidance via mandatory migration into other docs and a structured preservation map/report."
 - use when: "AGENTS.md is too big to navigate; restructure our agent instructions across the repo without losing any rule." It relocates guidance into the right docs and never deletes a rule.
 - not for: pruning: cutting obsolete, duplicated or no-op rules. Its "no orphaned guidance" rule migrates every removed line, so the bloat moves; for a cut use the Pruning section of `writing-for-agents` or `retro`, both in mattpocock-skills. Also `documentation-pattern-refactor` (README/USERS/DEVELOPERS/TODO layout; it audits AGENTS issues but never edits those files); `writing-for-agents` in mattpocock-skills is wording guidance, not a migration.
@@ -40,7 +40,7 @@ Curated 2026-11-17 at plugin 0.4.0. The uncommitted working-tree changes at that
 - part of: standalone; receives referrals from `documentation-pattern-refactor`.
 
 ### documentation-pattern-refactor
-- id: agentic-devcraft:documentation-pattern-refactor; status: released (plugin 0.4.0); source path: plugins/agentic-devcraft/skills/documentation-pattern-refactor/SKILL.md
+- id: agentic-devcraft:documentation-pattern-refactor; status: released (plugin 0.5.0); source path: plugins/agentic-devcraft/skills/documentation-pattern-refactor/SKILL.md
 - description: "Establish and enforce an audience-based documentation layout with README/USERS/DEVELOPERS/TODO rules, classify existing content into those domains, report structural and domain mismatches, and execute audit/scaffolding/restructuring refactors with explicit confirmation gates."
 - use when: "Is our README/USERS/DEVELOPERS/TODO split right?" Docs are misplaced or duplicated, or the audience-based layout needs scaffolding.
 - not for: `agent-instructions-cleanup` for AGENTS.md changes; the four candidate disciplines are overlays, not alternatives.

@@ -6,7 +6,7 @@ the OpenCode catalog.
 
 ## Marketplace installation
 
-The shared plugin is `agentic-devcraft@agentic-devcraft`, version `0.4.0`.
+The shared plugin is `agentic-devcraft@agentic-devcraft`, version `0.5.0`.
 For development or uncommitted changes, register the local checkout as the
 marketplace. Replace `/absolute/path/to/agentic-devcraft` with your checkout:
 
@@ -91,10 +91,7 @@ when it cannot.
 `ask-devcraft` is packaged under
 [`plugins/agentic-devcraft/skills/ask-devcraft/`](plugins/agentic-devcraft/skills/ask-devcraft/SKILL.md)
 and is explicit-only on every host: `/agentic-devcraft:ask-devcraft` in Claude,
-`$agentic-devcraft:ask-devcraft` in Codex, `@ask-devcraft` in OpenCode. It was
-added after version `0.4.0` was tagged, so until the next plugin version is
-published it reaches local-checkout installations only, not the published
-OpenCode catalog or a marketplace installation from that tag.
+`$agentic-devcraft:ask-devcraft` in Codex, `@ask-devcraft` in OpenCode.
 Ask it which skill fits a development task,
 or point it at the problem in the current thread. It also takes complaints about
 how the agent works: drift from what you asked for, doing more than asked,
@@ -173,7 +170,7 @@ network access:
 
 ```text
 Agentic Devcraft status skill: loaded
-Version: 0.4.0
+Version: 0.5.0
 Source: release record: https://github.com/deinspanjer/agentic-devcraft@<commit>
 Plugin: not applicable
 Updates: not checked

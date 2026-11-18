@@ -80,7 +80,7 @@ they do not substitute for native skill-loading probes or model-based packet rev
 Generate the catalog from the checked-out source into an empty directory:
 
 ```bash
-python3 scripts/build_opencode_catalog.py --output /tmp/devcraft-site --tag v0.4.0
+python3 scripts/build_opencode_catalog.py --output /tmp/devcraft-site --tag v0.5.0
 ```
 
 `--tag` must be `v<version>` and match `version` in both
@@ -98,7 +98,7 @@ The generator writes `release.json` into each skill, and the status skill reads 
 {
   "schema": "agentic-devcraft-skill-release/v1",
   "skill": "status",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "repository": "https://github.com/deinspanjer/agentic-devcraft",
   "source_path": "plugins/agentic-devcraft/skills/status",
   "revision": "<full commit SHA>"

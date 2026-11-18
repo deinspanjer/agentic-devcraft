@@ -28,9 +28,7 @@ explicit-only skill that recommends which skill to invoke for a development task
 It ranks the skills installed on the host first, using a curated knowledge base of
 six popular skill sources and a few individually chosen community skills, and hands
 off to a source's own router when one is installed. See
-[USERS.md](USERS.md#ask-devcraft). It is in the source tree but in no tagged
-release yet: until the next plugin version it reaches only local-checkout
-installations.
+[USERS.md](USERS.md#ask-devcraft).
 The same five skills load in OpenCode V2 as standalone, on-call skills from a local
 checkout or the generated [HTTP catalog](USERS.md#opencode).
 See [USERS.md](USERS.md) for marketplace installation, use, and Air integration.
