@@ -47,6 +47,25 @@ knowledge base is described under
 [Ask Devcraft knowledge base](#ask-devcraft-knowledge-base), and the evidence it
 was promoted on under [Promotion record](#promotion-record).
 
+## OpenSpec setup
+
+This solo project uses global OpenSpec skills rather than generated project-local
+skills or commands. Keep `openspec/config.yaml`, specifications, and change history
+in the repository; do not regenerate local OpenSpec skill copies that shadow the
+global installation.
+
+With OpenSpec 2.1.0 installed, configure the tools used on your machine:
+
+```bash
+openspec init --scope global --tools claude,codex,opencode
+```
+
+The shared skills live in `~/.agents/skills/`. Claude receives links in its active
+configuration home's `skills/` directory; `CLAUDE_CONFIG_DIR` can select a
+non-default home, so installation for one Claude profile does not establish
+discovery for every profile. Use the `openspec-*` skills instead of the retired
+project-local `/opsx:*` command files.
+
 ## Local checks
 
 Create the project environment and install the pinned Harbor dependencies:
