@@ -1,55 +1,58 @@
 # OpenCode records
 
-Observed version: OpenCode 2.3.0, isolated server. Session reads below are
-experimental API routes; check actual fields and report differences as gaps.
+Session reads use the OpenCode 2.3.x API. The launcher helper requires Python 3.9+
+and a local Unix shell whose process descends from the session's server.
 
 ## Launcher
 
 Read this section only; the collector reads the rest.
 
-- Your session ID is `OPENCODE_SESSION_ID` in the shell tool's environment.
-- Reach the server with `opencode api` from the shell tool. Confirm the connection
-  first: `opencode api GET /api/session/$OPENCODE_SESSION_ID` must return that same
-  `id`. A failure or another ID means this CLI is not connected to the server running
-  the session. Report that limitation or ask for the server; do not try other
-  binaries, guessed ports, the database file, or a session listing.
-- Mode comes from that response, not from user text:
-  - `fork` present: a fork of `fork.sessionID`. Capture directly; do not delegate.
-  - `parentID` present, no `fork`: a delegated worker with fresh context, not a fork.
-  - neither: an ordinary session. Delegate once.
-- Ordinary boundary: the newest user message is the capture invocation.
-  `opencode api GET "/api/session/$OPENCODE_SESSION_ID/message?order=desc&limit=1&type=user"`
-  gives its `id`; the subject stops before it.
-- Delegate with the `subagent` tool, once. Hand over the invocation text, your
-  session ID as subject, that boundary message ID, the project directory,
-  capture-start, and the absolute `worker.md` path. The worker runs in the
-  background and its result arrives as a `<subagent>` message; do not poll, sleep, or
-  duplicate its work. If `subagent` is unavailable or denied, report that limitation.
+1. Run `python3 /absolute/skill/scripts/opencode_capture.py launch` in the shell
+   tool. The helper checks the server PID against the shell's process ancestry
+   before checking the session ID. A different service can return the same
+   session ID from shared storage, and bare `opencode api` can start that service.
+   Use the helper for all capture reads. If it fails, report its concrete error.
+   For an unregistered local server, use a host-supplied `CAPTURE_OPENCODE_SERVER`
+   loopback URL. Do not guess the endpoint or fall back to service discovery.
+2. Route on the helper's `mode`. For `fork`, capture directly. For `worker`,
+   collect directly with the original handoff. For `ordinary`, confirm that
+   `invocation.text` matches the active invocation before using `invocation.id`
+   as the exclusive cutoff. If it differs, do not use a newer message as the
+   cutoff; resolve the original invocation or ask one focused question.
+3. In an ordinary session, call `subagent` once. Pass the invocation unchanged,
+   invoking session ID, invocation message ID as the exclusive cutoff for that
+   session, directory, frozen capture-start UTC, and the absolute `worker.md`
+   path. If delegation is denied or unavailable, report it.
+   Wait for the automatic `<subagent>` result by ending your turn. If you reply
+   before it arrives, report that capture is pending, not failed or complete.
 
 ## Collector identity and subject
 
-- Your own session ID is `OPENCODE_SESSION_ID` in the shell tool's environment;
-  `opencode api GET /api/session/$OPENCODE_SESSION_ID` returns your session record
-  and must show that same `id`. Record it as the collector. A worker's `parentID` must equal the subject ID it
-  was handed, unless the invocation names a different subject. A mismatch is a
-  clarification, not a reason to search sessions.
+- Run `python3 /absolute/skill/scripts/opencode_capture.py identify`. Record the
+  returned `id` as the collector. A worker's `parentID` must equal the subject ID
+  in the handoff, unless the invocation names a different subject. A mismatch is
+  a clarification, not a reason to search sessions.
+- For an explicitly named different subject, use a boundary verified in its
+  export. Never pass the invoking session's message ID to metrics for that
+  subject.
 - A fork's subject is `fork.sessionID`. `fork.boundary` is `before` or `through` a
-  message ID in the original. Your own `time.created` (epoch milliseconds) is the
+  message ID in the original. Your own `created_ms` (epoch milliseconds) is the
   cutoff time.
-- `title` and `location.directory` in the subject's session record give the session
-  name and project directory. A missing title is `untitled-session`.
+- Read the subject's name and project directory from the export's
+  `.data.info.title` and `.data.info.location.directory`. A missing title is
+  `untitled-session`.
 
 ## Records and cutoff
 
-- Save the subject's records to a private temp file without printing them:
-  `opencode api GET /api/experimental/session/SUBJECT_ID/export > /private/temp/export.json`.
-  Let that command finish before anything reads the file; do not run it in the same
-  batch of tool calls as the metrics helper. Read needed turns from that file with
-  bounded reads. Paged
-  `/api/session/SUBJECT_ID/message` is equivalent once the session is idle: first
-  page `order=asc&limit=N`, later pages `limit=N&cursor=<cursor.next>` without
-  `order` (the server rejects the combination), repeating any `type` filter. A
-  failed page is a reported gap, never an empty result.
+- Make a private temp directory. In the shell tool, set `umask 077` and run
+  `python3 /absolute/skill/scripts/opencode_capture.py export SUBJECT_ID > "$private_dir/export.json"`.
+  Wait for a successful exit before reading the export or running metrics.
+  On failure, report the evidence gap. Never treat the output file as an empty
+  transcript.
+- Inspect bounded slices of `.data.messages`. User records have `id`, `type`,
+  `text`, and `time.created`. Assistant records have a `content` array. For tool
+  parts (`type == "tool"`), use `name`, `state.input`, `state.content`, and
+  `time.completed`. Do not read or include reasoning parts.
 - Projected messages change after the fact. A tool still running at a fork later
   shows its result inside the same original message. With a `through` boundary, treat
   any part or response whose `time.completed` is later than the cutoff time as
@@ -90,6 +93,5 @@ For a fork use the recorded boundary and add the cutoff time:
 - The session record's `tokens` and `cost` are current whole-session totals that
   include later and auxiliary generation; they are not issue-time values.
 - Not recorded: context capacity, harness version at issue time, and physical
-  transcript size. `opencode --version` from the connection confirmed above is the
-  current version only. `export_prefix_bytes` is serialized export size, a separate
-  measure.
+  transcript size. The helper's `server_version` is the current server version
+  only. `export_prefix_bytes` is serialized export size, a separate measure.

@@ -74,4 +74,27 @@ session IDs of the disposable runtime are omitted.
 - Maintainer check of selection forms from a local-checkout source: `@status` works
   in the OpenCode CLI and in OpenChamber; `$status` works in OpenChamber only. Both
   reported version 0.4.0 from the package manifests.
-- The session-read routes are experimental and verified on 2.3.0 only.
+- The session-read routes are experimental. The initial checks used 2.3.0.
+
+## Capture regression on OpenCode 2.3.2
+
+Recorded 2026-11-23. In an OpenChamber Desktop session, bare `opencode api`
+started a second service. Both services could return the same session ID.
+The launcher initially checked the response root rather than `.data.id`;
+the session was available and the original capture later saved a verified packet.
+
+The revised helper identified the actual OpenChamber server from the shell's
+process ancestry and its managed registration. It rejected the second service
+even with valid authentication and exported the original subject through
+OpenChamber. The metrics helper resolved the original invocation message as the
+exclusive cutoff. This check did not modify the original session or its packet.
+
+In a separate 2.3.2 server with an isolated home and the revised standalone skill,
+`opencode/big-pickle` ran two synthetic captures. The ordinary session delegated
+once, and its worker exported the original subject and used the invocation
+message as the exclusive boundary. The fork collected directly with no child,
+used the original subject ID, and supplied the native fork boundary and timestamp
+to metrics. Both wrote a private Markdown packet. The readback hashes matched
+the save receipts, and the invoking sessions returned the packet paths.
+The final helper passed a second run with explicit checks of the parent and
+worker tool calls, including that the ordinary parent did not export the subject.

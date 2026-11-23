@@ -93,13 +93,16 @@ with `.venv/bin/python -m unittest discover -s evals/harbor/tests -p test_captur
 They cover source-cutoff/authorship accounting, including OpenCode message
 boundaries and outcomes recorded after a fork, and exclusive private packet writes;
 they do not substitute for native skill-loading probes or model-based packet review.
+`test_opencode_capture.py` covers the launcher checks: the matched server must own
+the shell before the helper accepts a matching session ID, and the invocation
+boundary must come from the V2 user record.
 
 ## OpenCode catalog
 
 Generate the catalog from the checked-out source into an empty directory:
 
 ```bash
-python3 scripts/build_opencode_catalog.py --output /tmp/devcraft-site --tag v0.5.0
+python3 scripts/build_opencode_catalog.py --output /tmp/devcraft-site --tag v0.5.1
 ```
 
 `--tag` must be `v<version>` and match `version` in both
@@ -117,7 +120,7 @@ The generator writes `release.json` into each skill, and the status skill reads 
 {
   "schema": "agentic-devcraft-skill-release/v1",
   "skill": "status",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "repository": "https://github.com/deinspanjer/agentic-devcraft",
   "source_path": "plugins/agentic-devcraft/skills/status",
   "revision": "<full commit SHA>"

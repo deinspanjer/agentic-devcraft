@@ -6,7 +6,7 @@ the OpenCode catalog.
 
 ## Marketplace installation
 
-The shared plugin is `agentic-devcraft@agentic-devcraft`, version `0.5.0`.
+The shared plugin is `agentic-devcraft@agentic-devcraft`, version `0.5.1`.
 For development or uncommitted changes, register the local checkout as the
 marketplace. Replace `/absolute/path/to/agentic-devcraft` with your checkout:
 
@@ -170,7 +170,7 @@ network access:
 
 ```text
 Agentic Devcraft status skill: loaded
-Version: 0.5.0
+Version: 0.5.1
 Source: release record: https://github.com/deinspanjer/agentic-devcraft@<commit>
 Plugin: not applicable
 Updates: not checked
@@ -271,15 +271,21 @@ in the original chat. Claude terminal `/btw` has a separate tool-less implementa
 these Desktop forms are not a claim of universal CLI support. The user confirmed
 that the installed skill was tested and successfully captures an issue packet.
 
-In OpenCode 2.3.0, invoke it in the session that had the issue, or in a fork of that
-session. An ordinary session hands the work to one background subagent and relays
+In OpenCode 2.3.x, invoke `@capture-agent-issue` in the session that had the issue,
+or in a fork of that session. In OpenChamber, select `$capture-agent-issue`.
+An ordinary session hands the work to one background subagent and relays
 its result; a fork captures directly, up to its recorded fork point. The collector
 reads the original session through the server's session API, so a tool that was
 still running at a fork is reported as pending rather than by its later outcome.
 OpenCode records do not expose context capacity, the harness version at issue time,
 or physical transcript size; the packet marks those unavailable. Prompts in a
 subagent session are counted as unknown origin, not human turns. The session-read
-routes are experimental and were verified on that version only.
+routes are experimental. Capture requires Python 3.9+ and a local Unix shell.
+It checks that the connected server owns the shell before reading session
+records. For an unregistered local server, set `CAPTURE_OPENCODE_SERVER` in the
+shell tool's environment to its known loopback URL, such as
+`http://127.0.0.1:4096`. Use the existing server authentication. Capture does not
+start or switch to a background service.
 
 The collector reads original records directly, keeping source session/cutoff and
 collector identity separate. It saves one Markdown packet with attributed accounts,
