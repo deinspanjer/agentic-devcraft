@@ -427,9 +427,9 @@ Limits:
   The cause was not investigated.
 
 The hand-run probes in `evals/ask-devcraft/` and the fixtures remain open in
-[TODO.md](TODO.md#ask-devcraft). The promotion is uncommitted at the time of
-writing, so there is no promoted source digest yet; the skill first reaches
-marketplace and catalog users with the next plugin version.
+[TODO.md](TODO.md#ask-devcraft). Compare the [skill at promotion](https://github.com/deinspanjer/agentic-devcraft/tree/8c5273228bc9905659b47f7abfef4941981fe485/plugins/agentic-devcraft/skills/ask-devcraft)
+with the [skill packaged in v0.5.0](https://github.com/deinspanjer/agentic-devcraft/tree/v0.5.0/plugins/agentic-devcraft/skills/ask-devcraft)
+when reproducing the probes.
 
 ## Skill lifecycle
 
