@@ -48,3 +48,5 @@ can be tested directly without becoming installable marketplace content.
 
 Harbor evaluations are part of the local development cycle, not GitHub Actions.
 The only workflow publishes the OpenCode skill catalog for stable releases.
+
+<!-- broker pull-request check -->
